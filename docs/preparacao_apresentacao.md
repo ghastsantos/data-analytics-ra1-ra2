@@ -1,87 +1,78 @@
-# Guia de apresentação — RA1 e RA2
+# Colinha para apresentar o RA1 e o RA2
 
-Leiam juntos, depois treinem sem ler. A ideia é saber explicar o que o projeto fez; não decorar um texto.
+Não precisa decorar. Leiam juntos, entendam a ideia e usem os títulos para achar cada parte no notebook.
 
-## O que já está no repositório
+## RA1 — apresentação em dupla
 
-- **RA1:** notebook `.ipynb` executado e relatório Word preenchido no template da disciplina.
-- **RA2:** PDF do notebook com RA1, RA2 e saídas da execução; o trabalho também pede uma demonstração de cinco minutos para a professora.
-- **Link público:** https://github.com/ghastsantos/data-analytics-ra1-ra2
+### Gastão: explicar o começo
 
-Os arquivos das duas entregas estão no repositório. Se a disciplina também pedir anexar o PDF no Canvas ou em outra plataforma, enviem o PDF por lá; o link do GitHub não substitui esse envio.
+No Colab, procure **“RA1 — Ingestão e preparação”** e **“RA1.2 Fonte e ingestão”**.
 
-## RA1 — apresentação em sala, em dupla
+Você pode falar assim:
 
-### Gastão: problema, objetivo e fonte
+> Nosso trabalho usa uma base chamada Online Retail, que pegamos no site da UCI. Ela tem compras de uma loja online entre 2010 e 2011. Cada linha é um item da compra, então uma compra pode aparecer em várias linhas. No RA1, a gente organizou a base para poder analisar depois. Ela começa com 541.909 linhas e 8 colunas.
 
-**Fala sugerida:**
+Mostre a fonte e a tabelinha com algumas linhas. Aponte que tem data, produto, quantidade, preço e país.
 
-> Nosso projeto começa com uma base chamada Online Retail, da UCI. Ela tem registros de uma loja online do Reino Unido entre 2010 e 2011, com preços em libras. Cada linha representa um item de uma transação, não um pedido inteiro. No RA1, nosso objetivo foi conferir e preparar esses dados para análises futuras por data, produto e país. Nesta etapa, não calculamos vendas líquidas nem lucro.
+### Gustavo: explicar o tratamento e o resultado
 
-Depois, mostre no notebook a fonte e as primeiras linhas. A base original tem **541.909 registros e 8 colunas**. O arquivo veio em Excel; o processo registra a origem, confere o arquivo e lê a aba `Online Retail`.
+Procure **“RA1.3 Qualidade dos dados”**, **“RA1.4 Preparação”** e **“RA1.5 Resultado e validação”**.
 
-### Gustavo: qualidade, decisões e resultado
+Você pode falar assim:
 
-**Fala sugerida:**
+> A gente conferiu o que tinha na base e separou as linhas que não entravam no nosso recorte: cancelamentos, quantidades ou preços não positivos e registros de frete, taxas e ajustes. Mantivemos clientes sem ID, repetições e valores positivos altos porque não dava para afirmar que eram erros. No fim, ficaram 527.761 linhas preparadas e 14.148 separadas. Somando as duas partes, voltamos às 541.909 linhas do começo.
 
-> Primeiro verificamos ausências, repetições, cancelamentos, valores fora do recorte e os tipos das colunas. Mantivemos clientes sem ID, repetições e quantidades ou preços positivos extremos, porque não havia justificativa suficiente para apagar essas linhas. Separamos cancelamentos, quantidades ou preços não positivos e códigos de frete, taxas e ajustes. Cada linha separada fica registrada com um motivo.
+Mostre a tabela dos motivos. Termine dizendo:
 
-> Ao final, 527.761 linhas ficaram no recorte e 14.148 foram separadas. A soma volta às 541.909 linhas originais. Esse resultado é um conjunto preparado de itens positivos de mercadoria; não é receita líquida nem lucro, porque não relacionamos cada cancelamento à venda correspondente.
+> Isso não quer dizer que calculamos o lucro ou as vendas líquidas. A gente não ligou cada cancelamento à venda original.
 
-Se ajudar, mostre a tabela de balanço e a distribuição dos motivos. As exclusões exclusivas foram **9.288 cancelamentos, 1.336 quantidades não positivas, 1.181 preços não positivos e 2.343 lançamentos não mercantis**. Não some as contagens gerais de problemas de qualidade: alguns problemas aparecem juntos na mesma linha. O balanço de exclusões usa só o primeiro motivo aplicável.
+### Se perguntarem sobre o RA1
 
-### Perguntas prováveis do RA1
+- **Por que deixaram cliente sem ID?** A linha ainda tem informação do produto, preço, quantidade e data. Só não sabemos quem foi o cliente.
+- **Por que deixaram linhas repetidas?** O arquivo não diz se são erros. Apagar poderia tirar uma linha válida.
+- **O que são as 14.148 linhas separadas?** Linhas que ficaram fora do recorte, mas foram guardadas com o motivo.
+- **Por que não chamam o resultado de vendas?** Porque não conferimos os cancelamentos contra as vendas originais.
 
-- **O que é uma linha?** Um item registrado numa transação; uma fatura pode ter várias linhas.
-- **Por que deixaram clientes sem ID?** Porque ainda dá para usar item, quantidade, preço, data e país. Só não dá para fazer análise por cliente naquela linha. Foram mantidas 131.421 linhas preparadas sem ID de cliente.
-- **Por que mantiveram repetições?** A base não tem uma chave única original de linha. Linhas iguais merecem atenção, mas igualdade sozinha não prova erro; 5.221 repetições extras permaneceram no recorte.
-- **Por que não cortaram valores extremos positivos?** A base inclui clientes atacadistas e não há um limite de negócio confirmado para dizer que esses valores são erros.
-- **O que significa 14.148?** São linhas separadas do recorte, mas preservadas com a linha original e o motivo. Não foram apagadas do arquivo bruto.
-- **Isso é o total vendido ou lucro?** Não. É o recorte preparado. Não reconciliamos cancelamentos com as vendas originais nem calculamos lucro.
+**Passagem:** Gastão termina dizendo “Agora o Gustavo mostra como preparamos os dados”; Gustavo fecha com o balanço e o limite do trabalho.
 
-**Treino da dupla:** cada um apresenta sua parte, depois troquem: Gastão explica uma decisão de limpeza; Gustavo explica por que uma linha é item e por que o balanço fecha.
+## RA2 — conversa individual com a professora
 
-## RA2 — demonstração individual para a professora
+Procure **“RA2.2 Eventos simulados”**, **“RA2.3 Janela e consulta”** e depois as três seções **“Chegada 1”**, **“Chegada 2”** e **“Chegada 3”**.
 
-### Explicação inicial
+### Como começar
 
-**Fala sugerida para Gastão:**
+> No RA2, fiz uma demonstração com Spark. Preparei seis eventos inventados e mandei em três arquivos, dois de cada vez. O Spark lê cada chegada e soma o valor dos itens por minuto. Esses eventos são só para demonstrar; não são vendas reais.
 
-> No RA2, demonstro o Spark Structured Streaming acompanhando arquivos novos. A base usada para montar os exemplos vem do RA1, mas os seis eventos são inventados. Para cada evento, calculamos quantidade vezes preço e somamos os valores por janela de um minuto, usando o horário do evento. A cada chegada, a tabela mostra como os totais mudam.
+### O que explicar enquanto mostra
 
-### O que mostrar no notebook
+Em **“RA2.2 Eventos simulados”**, mostre a tabela dos seis eventos. Diga que o horário do evento é o que decide em qual minuto ele entra.
 
-1. **Eventos:** são seis eventos fictícios, enviados em três arquivos com dois eventos cada. A hora em `event_time` determina a janela; a hora de chegada do arquivo pode ser diferente.
-2. **Consulta Spark:** `readStream` observa os arquivos, `window` agrupa por minuto e `sum` soma `Quantity × UnitPrice`. `count` conta os registros de evento naquela janela.
-3. **Chegada 1:** `2 × 10 + 1 × 5 = 25 GBP` na janela das 10:00.
-4. **Chegada 2:** `3 × 10 = 30` acrescenta à janela das 10:00, que passa de 25 a **55 GBP**. O evento das 10:01:00 abre a janela seguinte com **20 GBP**.
-5. **Chegada 3:** mais **10 GBP** na janela das 10:01, que passa a **30 GBP**; outro evento abre a janela das 10:02 com **10 GBP**.
+Em **“RA2.3 Janela e consulta”**, explique sem entrar em todo o código: para cada evento, o cálculo é **quantidade × preço**; depois o Spark soma os valores dentro de cada minuto. Pense na janela como uma caixinha para cada minuto: eventos das 10:00 vão numa caixa, os das 10:01 vão na próxima.
 
-**Resultado final:** janelas 10:00, 10:01 e 10:02: **55, 30 e 10 GBP**. A soma final é **95 GBP**. O contador de eventos por janela é 3, 2 e 1; ele conta linhas de evento, não unidades de produto.
+Nas três chegadas, mostre a tabela que aparece embaixo de cada célula:
 
-### Conceitos que podem perguntar
+1. **Chegada 1:** dois itens de 10 GBP e um item de 5 GBP dão **25 GBP** na janela das 10:00.
+2. **Chegada 2:** entram mais 30 GBP na mesma janela, que passa a **55 GBP**. Um evento às 10:01 abre a próxima janela com **20 GBP**.
+3. **Chegada 3:** a janela das 10:01 passa a **30 GBP** e a das 10:02 começa com **10 GBP**.
 
-- **O que é streaming aqui?** O Spark consulta uma fonte que recebe arquivos e processa os novos registros à medida que chegam, em micro-lotes.
-- **Chegada e horário do evento são a mesma coisa?** Não. Chegada é quando o arquivo fica disponível; `event_time` é quando o evento teria acontecido e é o horário usado para a janela.
-- **Qual janela foi usada?** Tumbling, ou fixa, de um minuto. As janelas não se sobrepõem.
-- **O que acontece exatamente às 10:01:00?** O início da janela conta e o fim não. Por isso, 10:01:00 pertence a `[10:01, 10:02)`, e não a `[10:00, 10:01)`.
-- **Os 95 GBP são vendas reais?** Não. São só a soma dos seis eventos inventados para a demonstração.
-- **Isso usa Kafka ou guarda dados permanentemente?** Não. A demonstração usa arquivos e uma tabela em memória; não implementa Kafka nem armazenamento permanente de produção.
+No final, os totais são **55, 30 e 10 GBP**. Somados, dão **95 GBP**.
 
-### Roteiro para os cinco minutos
+### Se perguntarem sobre o RA2
 
-- **0:00–0:45:** apresente a pergunta e diga que os eventos são simulados.
-- **0:45–1:30:** mostre a tabela dos seis eventos e explique `event_time`.
-- **1:30–2:15:** aponte `readStream`, a janela de um minuto e a soma de quantidade vezes preço.
-- **2:15–4:15:** mostre as três chegadas e narre 25; depois 55 e 20; por fim 55, 30 e 10.
-- **4:15–5:00:** explique a fronteira das 10:01 e relembre que 95 GBP é um resultado da simulação.
+- **O que significa streaming?** O Spark fica acompanhando arquivos novos e processa os registros quando eles chegam.
+- **O horário do evento é quando o arquivo chega?** Não. O arquivo pode chegar depois; o horário dentro do evento é usado para escolher a janela.
+- **O que acontece às 10:01 em ponto?** Ele entra na caixinha nova. A das 10:00 vai só até antes das 10:01.
+- **Os 95 GBP são vendas reais?** Não. São a soma dos seis eventos inventados.
+- **Tem Kafka ou banco permanente?** Não. É uma demonstração simples com arquivos e uma tabela temporária.
 
-Se as saídas já estiverem na tela, mostre cada chegada uma vez. Não reexecute só uma célula “Chegada”: ela bloqueia a publicação duplicada no mesmo fluxo. Se precisar repetir a execução, comece uma sessão nova e rode o notebook desde o início.
+### Se tiver cinco minutos
 
-## Antes de responder
+Comece dizendo qual é a demonstração; mostre os eventos; explique a conta de quantidade vezes preço; passe pelas três chegadas; termine explicando que os dados são inventados e que 10:01 já conta no minuto seguinte.
 
-Se não souber algo, não chute. Mostre onde o notebook registra a decisão e diga o limite do que foi implementado. Para guardar a apresentação inteira:
+Se as chegadas já aparecem na tela, mostre cada resultado uma vez. Não clique de novo numa célula “Chegada”: ela impede repetir a mesma chegada no mesmo fluxo. Se precisar rodar tudo outra vez, comece uma sessão nova e execute o notebook desde o começo.
 
-**RA1:** base UCI → uma linha é um item → decisões justificadas → 541.909 = 527.761 + 14.148 → não é venda líquida.
+## Para lembrar na hora
 
-**RA2:** seis eventos inventados → três chegadas → janela de um minuto por `event_time` → 55, 30 e 10 GBP → simulação, não venda real.
+**RA1:** 541.909 no começo; 527.761 preparadas; 14.148 separadas. Uma linha é um item. Não calculamos lucro nem venda líquida.
+
+**RA2:** seis eventos inventados; três chegadas; totais finais de 55, 30 e 10 GBP; 95 GBP é só a soma da demonstração.

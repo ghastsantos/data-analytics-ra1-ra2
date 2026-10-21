@@ -1,5 +1,5 @@
 {
-  "verified_at_utc": "2026-10-21T14:14:23.492860+00:00",
+  "verified_at_utc": "2026-10-21T14:20:18.379143+00:00",
   "notebook_code_cells_executed": 14,
   "notebook_error_outputs": 0,
   "unit_tests_passed": 7,
@@ -8,7 +8,8 @@
   "synthetic_events": 6,
   "notebook_pdf_pages": 13,
   "notebook_pdf_visual_review": "Todas as páginas inspecionadas; código, tabelas e resultados legíveis.",
-  "report_pages_visually_reviewed": 10,
+  "report_pages_visually_reviewed_before_url_update": 10,
+  "report_render_after_url_update": "Not rerun: LibreOffice is unavailable in this environment; the cover URL replaced longer placeholder text.",
   "artifact_sha256": {
     "projeto_data_analytics.ipynb": "023e3d13905817321d6373ae6e0ce6f3b924bfc4a512ea9ea27cae2c874e9dcb",
     "docs/relatorio_ra1.docx": "49aaa7496a89c2dbb4bb7090a7bdfac4a5c14906204f153afa00534a6ac7ad8f",

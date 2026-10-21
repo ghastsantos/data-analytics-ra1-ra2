@@ -11,6 +11,7 @@ O notebook prepara a base histórica Online Retail (RA1) e mostra uma demonstra�
 - `projeto_data_analytics.ipynb`: código executado e explicações dos dois trabalhos.
 - `docs/relatorio_ra1.docx`: documentação preenchida no modelo da disciplina.
 - `docs/projeto_data_analytics.pdf`: PDF do notebook para o RA2.
+- `docs/preparacao_apresentacao.md`: roteiro de fala do RA1 em dupla e do RA2 individual.
 - `scripts/` e `tests/`: código da preparação e verificações.
 - `evidence/`: fonte, diagnósticos, balanço de linhas e resultados do streaming.
 

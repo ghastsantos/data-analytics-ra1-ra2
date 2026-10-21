@@ -1,0 +1,9 @@
+ID,Verificação,Quantidade,Percentual da base
+Q1,Description ausente,1454,0.27
+Q2,CustomerID ausente,135080,24.93
+Q3,Repetições extras nas oito colunas,5268,0.97
+Q4,InvoiceNo com prefixo C,9288,1.71
+Q5,Quantity menor ou igual a zero,10624,1.96
+Q6,UnitPrice menor ou igual a zero,2517,0.46
+Q7,Description com espaços nas pontas,113452,20.94
+Q8,InvoiceDate inválida,0,0.0

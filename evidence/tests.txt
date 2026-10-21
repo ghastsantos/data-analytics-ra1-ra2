@@ -1,0 +1,12 @@
+test_exclusions_are_disjoint_and_reconcile_with_original_rows (test_data_preparation.PreparationTests.test_exclusions_are_disjoint_and_reconcile_with_original_rows) ... ok
+test_keeps_merchandise_with_unusual_codes_and_excludes_vouchers (test_data_preparation.PreparationTests.test_keeps_merchandise_with_unusual_codes_and_excludes_vouchers) ... ok
+test_keeps_missing_customer_exact_repetitions_and_large_valid_sale (test_data_preparation.PreparationTests.test_keeps_missing_customer_exact_repetitions_and_large_valid_sale) ... ok
+test_missing_columns_are_reported_clearly (test_data_preparation.PreparationTests.test_missing_columns_are_reported_clearly) ... ok
+test_rejects_fractional_quantities_and_keeps_identifiers_as_text (test_data_preparation.PreparationTests.test_rejects_fractional_quantities_and_keeps_identifiers_as_text) ... ok
+test_numeric_description_is_not_counted_as_outer_whitespace (test_notebook_quality.NotebookQualityTests.test_numeric_description_is_not_counted_as_outer_whitespace) ... ok
+test_existing_verified_archive_without_manifest_reaches_excel_reader (test_source_manifest.SourceManifestTests.test_existing_verified_archive_without_manifest_reaches_excel_reader) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.271s
+
+OK

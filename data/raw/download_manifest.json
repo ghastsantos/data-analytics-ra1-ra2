@@ -1,0 +1,12 @@
+{
+  "downloaded_at_utc": "2026-10-15T18:07:46.943871+00:00",
+  "page_url": "https://archive.ics.uci.edu/dataset/352/online+retail",
+  "download_url": "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip",
+  "http": {
+    "final_url": "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip",
+    "content_type": null,
+    "last_modified": null,
+    "etag": null
+  },
+  "archive_sha256": "f5385cbb54bbebf7196389109c6b0621faab0c304e3702548165e71c84aede8b"
+}

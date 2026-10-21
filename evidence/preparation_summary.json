@@ -1,0 +1,18 @@
+{
+  "input_rows": 541909,
+  "prepared_rows": 527761,
+  "excluded_rows": 14148,
+  "input_columns": 8,
+  "prepared_columns": 9,
+  "exclusions_by_reason": {
+    "cancellation": 9288,
+    "non_merchandise_code": 2343,
+    "non_positive_quantity": 1336,
+    "non_positive_price": 1181
+  },
+  "missing_customers_kept": 131421,
+  "exact_duplicate_rows_kept": 5221,
+  "source_rows_unique": true,
+  "date_min": "2010-12-01 08:26:00",
+  "date_max": "2011-12-09 12:50:00"
+}

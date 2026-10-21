@@ -1,0 +1,1572 @@
+{
+  "generated_at_utc": "2026-10-15T18:14:01.496257+00:00",
+  "purpose": "RA1: diagnóstico de qualidade e proposta de preparação, sem agregações de negócio ou receita",
+  "source": {
+    "downloaded_at_utc": "2026-10-15T18:07:46.943871+00:00",
+    "page_url": "https://archive.ics.uci.edu/dataset/352/online+retail",
+    "download_url": "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip",
+    "http": {
+      "final_url": "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip",
+      "content_type": null,
+      "last_modified": null,
+      "etag": null
+    },
+    "archive_sha256": "f5385cbb54bbebf7196389109c6b0621faab0c304e3702548165e71c84aede8b",
+    "citation": "Chen, D. (2015). Online Retail [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5BW33.",
+    "doi": "https://doi.org/10.24432/C5BW33",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "archive_path": "data/raw/online_retail_uci.zip",
+    "archive_size_bytes": 23715478,
+    "archive_members": [
+      "Online Retail.xlsx"
+    ],
+    "workbook_path": "data/raw/Online Retail.xlsx",
+    "workbook_size_bytes": 23715344,
+    "workbook_sha256": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+    "workbook_matches_original_archive_member": true,
+    "sheet_names": [
+      "Online Retail"
+    ],
+    "worksheet": "Online Retail",
+    "official_description": {
+      "unit_of_observation": "Linha de item de transação, não pedido inteiro nem cliente único",
+      "currency": "GBP (libra esterlina)",
+      "supplier_country": "Reino Unido",
+      "business": "Varejo online sem loja física de presentes, com muitos clientes atacadistas",
+      "cancellation_rule": "InvoiceNo com prefixo c indica cancelamento (comparação sem diferenciar maiúscula/minúscula)",
+      "metadata_caveat": "A página da UCI informa ausência de valores faltantes, mas o arquivo real tem lacunas; prevalece a inspeção do arquivo."
+    }
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "pandas": "3.0.1"
+  },
+  "shape": {
+    "rows": 541909,
+    "columns": 8
+  },
+  "schema": [
+    {
+      "column": "InvoiceNo",
+      "pandas_dtype": "object",
+      "null_count": 0,
+      "distinct_non_null": 25900
+    },
+    {
+      "column": "StockCode",
+      "pandas_dtype": "object",
+      "null_count": 0,
+      "distinct_non_null": 4070
+    },
+    {
+      "column": "Description",
+      "pandas_dtype": "object",
+      "null_count": 1454,
+      "distinct_non_null": 4223
+    },
+    {
+      "column": "Quantity",
+      "pandas_dtype": "int64",
+      "null_count": 0,
+      "distinct_non_null": 722
+    },
+    {
+      "column": "InvoiceDate",
+      "pandas_dtype": "datetime64[us]",
+      "null_count": 0,
+      "distinct_non_null": 23260
+    },
+    {
+      "column": "UnitPrice",
+      "pandas_dtype": "float64",
+      "null_count": 0,
+      "distinct_non_null": 1630
+    },
+    {
+      "column": "CustomerID",
+      "pandas_dtype": "float64",
+      "null_count": 135080,
+      "distinct_non_null": 4372
+    },
+    {
+      "column": "Country",
+      "pandas_dtype": "str",
+      "null_count": 0,
+      "distinct_non_null": 38
+    }
+  ],
+  "null_counts": {
+    "InvoiceNo": 0,
+    "StockCode": 0,
+    "Description": 1454,
+    "Quantity": 0,
+    "InvoiceDate": 0,
+    "UnitPrice": 0,
+    "CustomerID": 135080,
+    "Country": 0
+  },
+  "missing_description_count": 1454,
+  "leading_or_trailing_whitespace_counts": {
+    "InvoiceNo": 0,
+    "StockCode": 0,
+    "Description": 113452,
+    "Country": 0
+  },
+  "dates": {
+    "min": "2010-12-01T08:26:00",
+    "max": "2011-12-09T12:50:00",
+    "unparseable_or_missing": 0,
+    "timezone": "Não informada na fonte; conservar horário ingênuo, sem inventar UTC"
+  },
+  "duplicates": {
+    "definition": "Igualdade das oito colunas originais, antes de normalizar textos",
+    "extra_rows_after_first": 5268,
+    "all_rows_in_duplicate_groups": 10147,
+    "distinct_duplicate_groups": 4879,
+    "samples": [
+      {
+        "source_row": 487,
+        "InvoiceNo": 536409,
+        "StockCode": 22111,
+        "Description": "SCOTTIE DOG HOT WATER BOTTLE",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 4.95,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 491,
+        "InvoiceNo": 536409,
+        "StockCode": 22866,
+        "Description": "HAND WARMER SCOTTY DOG DESIGN",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 2.1,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 496,
+        "InvoiceNo": 536409,
+        "StockCode": 21866,
+        "Description": "UNION JACK FLAG LUGGAGE TAG",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 1.25,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 519,
+        "InvoiceNo": 536409,
+        "StockCode": 21866,
+        "Description": "UNION JACK FLAG LUGGAGE TAG",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 1.25,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 523,
+        "InvoiceNo": 536409,
+        "StockCode": 22900,
+        "Description": " SET 2 TEA TOWELS I LOVE LONDON ",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 2.95,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 529,
+        "InvoiceNo": 536409,
+        "StockCode": 22866,
+        "Description": "HAND WARMER SCOTTY DOG DESIGN",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 2.1,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 539,
+        "InvoiceNo": 536409,
+        "StockCode": 22900,
+        "Description": " SET 2 TEA TOWELS I LOVE LONDON ",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 2.95,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 541,
+        "InvoiceNo": 536409,
+        "StockCode": 22111,
+        "Description": "SCOTTIE DOG HOT WATER BOTTLE",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:45:00",
+        "UnitPrice": 4.95,
+        "CustomerID": 17908.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 550,
+        "InvoiceNo": 536412,
+        "StockCode": 22327,
+        "Description": "ROUND SNACK BOXES SET OF 4 SKULLS",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:49:00",
+        "UnitPrice": 2.95,
+        "CustomerID": 17920.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 557,
+        "InvoiceNo": 536412,
+        "StockCode": 22327,
+        "Description": "ROUND SNACK BOXES SET OF 4 SKULLS",
+        "Quantity": 1,
+        "InvoiceDate": "2010-12-01T11:49:00",
+        "UnitPrice": 2.95,
+        "CustomerID": 17920.0,
+        "Country": "United Kingdom"
+      }
+    ],
+    "policy": "Manter e sinalizar. Igualdade não prova ingestão duplicada porque não existe identificador único de linha no arquivo. Não executar drop_duplicates automaticamente."
+  },
+  "uniqueness": {
+    "invoice_count": 25900,
+    "stock_code_count": 4070,
+    "customer_count_non_null": 4372,
+    "country_count": 38,
+    "invoice_stock_pair_duplicate_extra_rows": 10684,
+    "invoice_is_row_identifier": false,
+    "invoice_stock_pair_is_row_identifier": false,
+    "proposed_technical_id": "source_row = índice original + 2, equivalente à linha da planilha, preservado após filtros"
+  },
+  "numeric_profile": {
+    "Quantity": {
+      "min": -80995,
+      "max": 80995,
+      "quantiles": {
+        "0.01": -2.0,
+        "0.25": 1.0,
+        "0.5": 3.0,
+        "0.75": 10.0,
+        "0.95": 29.0,
+        "0.99": 100.0,
+        "0.999": 468.91999999945983
+      },
+      "negative": 10624,
+      "zero": 0,
+      "positive": 531285,
+      "nonfinite": 0,
+      "lowest_samples": [
+        {
+          "source_row": 540424,
+          "InvoiceNo": "C581484",
+          "StockCode": 23843,
+          "Description": "PAPER CRAFT , LITTLE BIRDIE",
+          "Quantity": -80995,
+          "InvoiceDate": "2011-12-09T09:27:00",
+          "UnitPrice": 2.08,
+          "CustomerID": 16446.0,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 61626,
+          "InvoiceNo": "C541433",
+          "StockCode": 23166,
+          "Description": "MEDIUM CERAMIC TOP STORAGE JAR",
+          "Quantity": -74215,
+          "InvoiceDate": "2011-01-18T10:17:00",
+          "UnitPrice": 1.04,
+          "CustomerID": 12346.0,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 225531,
+          "InvoiceNo": 556690,
+          "StockCode": 23005,
+          "Description": "printing smudges/thrown away",
+          "Quantity": -9600,
+          "InvoiceDate": "2011-06-14T10:37:00",
+          "UnitPrice": 0.0,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 225532,
+          "InvoiceNo": 556691,
+          "StockCode": 23005,
+          "Description": "printing smudges/thrown away",
+          "Quantity": -9600,
+          "InvoiceDate": "2011-06-14T10:37:00",
+          "UnitPrice": 0.0,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 4289,
+          "InvoiceNo": "C536757",
+          "StockCode": 84347,
+          "Description": "ROTATING SILVER ANGELS T-LIGHT HLDR",
+          "Quantity": -9360,
+          "InvoiceDate": "2010-12-02T14:23:00",
+          "UnitPrice": 0.03,
+          "CustomerID": 15838.0,
+          "Country": "United Kingdom"
+        }
+      ],
+      "highest_samples": [
+        {
+          "source_row": 540423,
+          "InvoiceNo": 581483,
+          "StockCode": 23843,
+          "Description": "PAPER CRAFT , LITTLE BIRDIE",
+          "Quantity": 80995,
+          "InvoiceDate": "2011-12-09T09:15:00",
+          "UnitPrice": 2.08,
+          "CustomerID": 16446.0,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 61621,
+          "InvoiceNo": 541431,
+          "StockCode": 23166,
+          "Description": "MEDIUM CERAMIC TOP STORAGE JAR",
+          "Quantity": 74215,
+          "InvoiceDate": "2011-01-18T10:01:00",
+          "UnitPrice": 1.04,
+          "CustomerID": 12346.0,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 502124,
+          "InvoiceNo": 578841,
+          "StockCode": 84826,
+          "Description": "ASSTD DESIGN 3D PAPER STICKERS",
+          "Quantity": 12540,
+          "InvoiceDate": "2011-11-25T15:57:00",
+          "UnitPrice": 0.0,
+          "CustomerID": 13256.0,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 74616,
+          "InvoiceNo": 542504,
+          "StockCode": 37413,
+          "Description": null,
+          "Quantity": 5568,
+          "InvoiceDate": "2011-01-28T12:03:00",
+          "UnitPrice": 0.0,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 421634,
+          "InvoiceNo": 573008,
+          "StockCode": 84077,
+          "Description": "WORLD WAR 2 GLIDERS ASSTD DESIGNS",
+          "Quantity": 4800,
+          "InvoiceDate": "2011-10-27T12:26:00",
+          "UnitPrice": 0.21,
+          "CustomerID": 12901.0,
+          "Country": "United Kingdom"
+        }
+      ]
+    },
+    "UnitPrice": {
+      "min": -11062.06,
+      "max": 38970.0,
+      "quantiles": {
+        "0.01": 0.19,
+        "0.25": 1.25,
+        "0.5": 2.08,
+        "0.75": 4.13,
+        "0.95": 9.95,
+        "0.99": 18.0,
+        "0.999": 205.5597999999649
+      },
+      "negative": 2,
+      "zero": 2515,
+      "positive": 539392,
+      "nonfinite": 0,
+      "lowest_samples": [
+        {
+          "source_row": 299985,
+          "InvoiceNo": "A563186",
+          "StockCode": "B",
+          "Description": "Adjust bad debt",
+          "Quantity": 1,
+          "InvoiceDate": "2011-08-12T14:51:00",
+          "UnitPrice": -11062.06,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 299986,
+          "InvoiceNo": "A563187",
+          "StockCode": "B",
+          "Description": "Adjust bad debt",
+          "Quantity": 1,
+          "InvoiceDate": "2011-08-12T14:52:00",
+          "UnitPrice": -11062.06,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 624,
+          "InvoiceNo": 536414,
+          "StockCode": 22139,
+          "Description": null,
+          "Quantity": 56,
+          "InvoiceDate": "2010-12-01T11:52:00",
+          "UnitPrice": 0.0,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 1972,
+          "InvoiceNo": 536545,
+          "StockCode": 21134,
+          "Description": null,
+          "Quantity": 1,
+          "InvoiceDate": "2010-12-01T14:32:00",
+          "UnitPrice": 0.0,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 1973,
+          "InvoiceNo": 536546,
+          "StockCode": 22145,
+          "Description": null,
+          "Quantity": 1,
+          "InvoiceDate": "2010-12-01T14:33:00",
+          "UnitPrice": 0.0,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        }
+      ],
+      "highest_samples": [
+        {
+          "source_row": 222683,
+          "InvoiceNo": "C556445",
+          "StockCode": "M",
+          "Description": "Manual",
+          "Quantity": -1,
+          "InvoiceDate": "2011-06-10T15:31:00",
+          "UnitPrice": 38970.0,
+          "CustomerID": 15098.0,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 524604,
+          "InvoiceNo": "C580605",
+          "StockCode": "AMAZONFEE",
+          "Description": "AMAZON FEE",
+          "Quantity": -1,
+          "InvoiceDate": "2011-12-05T11:36:00",
+          "UnitPrice": 17836.46,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 43704,
+          "InvoiceNo": "C540117",
+          "StockCode": "AMAZONFEE",
+          "Description": "AMAZON FEE",
+          "Quantity": -1,
+          "InvoiceDate": "2011-01-05T09:55:00",
+          "UnitPrice": 16888.02,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 43705,
+          "InvoiceNo": "C540118",
+          "StockCode": "AMAZONFEE",
+          "Description": "AMAZON FEE",
+          "Quantity": -1,
+          "InvoiceDate": "2011-01-05T09:57:00",
+          "UnitPrice": 16453.71,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        },
+        {
+          "source_row": 15018,
+          "InvoiceNo": "C537630",
+          "StockCode": "AMAZONFEE",
+          "Description": "AMAZON FEE",
+          "Quantity": -1,
+          "InvoiceDate": "2010-12-07T15:04:00",
+          "UnitPrice": 13541.33,
+          "CustomerID": null,
+          "Country": "United Kingdom"
+        }
+      ]
+    }
+  },
+  "cancellations": {
+    "rows": 9288,
+    "invoices": 3836,
+    "quantity_negative": 9288,
+    "quantity_zero": 0,
+    "quantity_positive": 0,
+    "negative_quantity_without_c_prefix": 1336,
+    "samples": [
+      {
+        "source_row": 143,
+        "InvoiceNo": "C536379",
+        "StockCode": "D",
+        "Description": "Discount",
+        "Quantity": -1,
+        "InvoiceDate": "2010-12-01T09:41:00",
+        "UnitPrice": 27.5,
+        "CustomerID": 14527.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 156,
+        "InvoiceNo": "C536383",
+        "StockCode": "35004C",
+        "Description": "SET OF 3 COLOURED  FLYING DUCKS",
+        "Quantity": -1,
+        "InvoiceDate": "2010-12-01T09:49:00",
+        "UnitPrice": 4.65,
+        "CustomerID": 15311.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 237,
+        "InvoiceNo": "C536391",
+        "StockCode": 22556,
+        "Description": "PLASTERS IN TIN CIRCUS PARADE ",
+        "Quantity": -12,
+        "InvoiceDate": "2010-12-01T10:24:00",
+        "UnitPrice": 1.65,
+        "CustomerID": 17548.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 238,
+        "InvoiceNo": "C536391",
+        "StockCode": 21984,
+        "Description": "PACK OF 12 PINK PAISLEY TISSUES ",
+        "Quantity": -24,
+        "InvoiceDate": "2010-12-01T10:24:00",
+        "UnitPrice": 0.29,
+        "CustomerID": 17548.0,
+        "Country": "United Kingdom"
+      },
+      {
+        "source_row": 239,
+        "InvoiceNo": "C536391",
+        "StockCode": 21983,
+        "Description": "PACK OF 12 BLUE PAISLEY TISSUES ",
+        "Quantity": -24,
+        "InvoiceDate": "2010-12-01T10:24:00",
+        "UnitPrice": 0.29,
+        "CustomerID": 17548.0,
+        "Country": "United Kingdom"
+      }
+    ]
+  },
+  "stock_codes": {
+    "candidate_merchandise_pattern_fullmatch": "\\d{5}[A-Za-z]*",
+    "matching_rows": 538914,
+    "nonmatching_rows": 2995,
+    "nonmatching_distinct_codes": 33,
+    "special_codes": [
+      {
+        "stock_code": "AMAZONFEE",
+        "rows": 34,
+        "description_examples": [
+          "AMAZON FEE"
+        ],
+        "positive_quantity_and_price_rows": 2
+      },
+      {
+        "stock_code": "B",
+        "rows": 3,
+        "description_examples": [
+          "Adjust bad debt"
+        ],
+        "positive_quantity_and_price_rows": 1
+      },
+      {
+        "stock_code": "BANK CHARGES",
+        "rows": 37,
+        "description_examples": [
+          "Bank Charges"
+        ],
+        "positive_quantity_and_price_rows": 12
+      },
+      {
+        "stock_code": "C2",
+        "rows": 144,
+        "description_examples": [
+          "CARRIAGE",
+          null
+        ],
+        "positive_quantity_and_price_rows": 141
+      },
+      {
+        "stock_code": "CRUK",
+        "rows": 16,
+        "description_examples": [
+          "CRUK Commission"
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "D",
+        "rows": 77,
+        "description_examples": [
+          "Discount"
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0003",
+        "rows": 5,
+        "description_examples": [
+          "BOXED GLASS ASHTRAY",
+          "ebay"
+        ],
+        "positive_quantity_and_price_rows": 4
+      },
+      {
+        "stock_code": "DCGS0004",
+        "rows": 1,
+        "description_examples": [
+          "HAYNES CAMPER SHOULDER BAG"
+        ],
+        "positive_quantity_and_price_rows": 1
+      },
+      {
+        "stock_code": "DCGS0055",
+        "rows": 1,
+        "description_examples": [
+          null
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0057",
+        "rows": 1,
+        "description_examples": [
+          null
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0066P",
+        "rows": 1,
+        "description_examples": [
+          null
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0067",
+        "rows": 1,
+        "description_examples": [
+          "ebay"
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0068",
+        "rows": 1,
+        "description_examples": [
+          "ebay"
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0069",
+        "rows": 2,
+        "description_examples": [
+          "OOH LA LA DOGS COLLAR",
+          "ebay"
+        ],
+        "positive_quantity_and_price_rows": 1
+      },
+      {
+        "stock_code": "DCGS0070",
+        "rows": 2,
+        "description_examples": [
+          "CAMOUFLAGE DOG COLLAR",
+          null
+        ],
+        "positive_quantity_and_price_rows": 1
+      },
+      {
+        "stock_code": "DCGS0071",
+        "rows": 1,
+        "description_examples": [
+          null
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0072",
+        "rows": 1,
+        "description_examples": [
+          null
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0073",
+        "rows": 1,
+        "description_examples": [
+          "ebay"
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0074",
+        "rows": 1,
+        "description_examples": [
+          null
+        ],
+        "positive_quantity_and_price_rows": 0
+      },
+      {
+        "stock_code": "DCGS0076",
+        "rows": 2,
+        "description_examples": [
+          "SUNJAR LED NIGHT NIGHT LIGHT"
+        ],
+        "positive_quantity_and_price_rows": 2
+      },
+      {
+        "stock_code": "DCGSSBOY",
+        "rows": 11,
+        "description_examples": [
+          "BOYS PARTY BAG"
+        ],
+        "positive_quantity_and_price_rows": 11
+      },
+      {
+        "stock_code": "DCGSSGIRL",
+        "rows": 13,
+        "description_examples": [
+          "GIRLS PARTY BAG"
+        ],
+        "positive_quantity_and_price_rows": 13
+      },
+      {
+        "stock_code": "DOT",
+        "rows": 710,
+        "description_examples": [
+          "DOTCOM POSTAGE",
+          null
+        ],
+        "positive_quantity_and_price_rows": 706
+      },
+      {
+        "stock_code": "M",
+        "rows": 571,
+        "description_examples": [
+          "Manual"
+        ],
+        "positive_quantity_and_price_rows": 321
+      },
+      {
+        "stock_code": "PADS",
+        "rows": 4,
+        "description_examples": [
+          "PADS TO MATCH ALL CUSHIONS"
+        ],
+        "positive_quantity_and_price_rows": 3
+      },
+      {
+        "stock_code": "POST",
+        "rows": 1256,
+        "description_examples": [
+          "POSTAGE",
+          null
+        ],
+        "positive_quantity_and_price_rows": 1126
+      },
+      {
+        "stock_code": "S",
+        "rows": 63,
+        "description_examples": [
+          "SAMPLES"
+        ],
+        "positive_quantity_and_price_rows": 2
+      },
+      {
+        "stock_code": "gift_0001_10",
+        "rows": 9,
+        "description_examples": [
+          "Dotcomgiftshop Gift Voucher £10.00",
+          null
+        ],
+        "positive_quantity_and_price_rows": 8
+      },
+      {
+        "stock_code": "gift_0001_20",
+        "rows": 10,
+        "description_examples": [
+          "Dotcomgiftshop Gift Voucher £20.00",
+          "to push order througha s stock was "
+        ],
+        "positive_quantity_and_price_rows": 9
+      },
+      {
+        "stock_code": "gift_0001_30",
+        "rows": 8,
+        "description_examples": [
+          "Dotcomgiftshop Gift Voucher £30.00",
+          null
+        ],
+        "positive_quantity_and_price_rows": 7
+      },
+      {
+        "stock_code": "gift_0001_40",
+        "rows": 3,
+        "description_examples": [
+          "Dotcomgiftshop Gift Voucher £40.00"
+        ],
+        "positive_quantity_and_price_rows": 3
+      },
+      {
+        "stock_code": "gift_0001_50",
+        "rows": 4,
+        "description_examples": [
+          "Dotcomgiftshop Gift Voucher £50.00"
+        ],
+        "positive_quantity_and_price_rows": 4
+      },
+      {
+        "stock_code": "m",
+        "rows": 1,
+        "description_examples": [
+          "Manual"
+        ],
+        "positive_quantity_and_price_rows": 1
+      }
+    ],
+    "alphabetic_suffix_matching_examples": [
+      "85123A",
+      "84406B",
+      "84029G",
+      "84029E",
+      "82494L",
+      "85099C",
+      "84997B",
+      "84997C",
+      "84519A",
+      "85183B",
+      "85071B",
+      "37444A",
+      "37444C",
+      "84971S",
+      "15056BL",
+      "15056N",
+      "35004C",
+      "85049A",
+      "85099B",
+      "35004G"
+    ],
+    "tradeoff": "Heurística operacional de escopo, não cadastro oficial de mercadorias. Mantém variantes alfabéticas e pode excluir códigos de produto válidos fora do padrão (por exemplo, DCGSSBOY e DCGSSGIRL); os excluídos permanecem rastreáveis para revisão."
+  },
+  "quality_flags_overlapping_do_not_sum": {
+    "invalid_essential": 0,
+    "cancellation": 9288,
+    "quantity_nonpositive": 10624,
+    "unit_price_nonpositive": 2517,
+    "description_blank_or_null": 1454,
+    "non_merchandise_code_pattern": 2995,
+    "customer_id_missing": 135080,
+    "exact_duplicate_extra_rows": 5268
+  },
+  "rejected_regex_proposal": {
+    "scope": "Itens de transações positivas com preço positivo e código de mercadoria no padrão selecionado; não representa vendas líquidas de devoluções/cancelamentos",
+    "status": "REJECTED: alternativa diagnóstica substituída pela lista explícita da função prepare_data",
+    "rejection_reason": "O formato do código não comprova a natureza da linha. A regex separava também 36 linhas positivas de oito códigos com descrições de mercadoria, incluindo DCGSSBOY e PADS.",
+    "sequential_exclusions": [
+      {
+        "rule": "invalid_essential",
+        "description": "Campos essenciais ausentes, inválidos ou não finitos",
+        "rows_before": 541909,
+        "rows_excluded": 0,
+        "rows_remaining": 541909,
+        "samples": []
+      },
+      {
+        "rule": "cancellation",
+        "description": "InvoiceNo começa com C",
+        "rows_before": 541909,
+        "rows_excluded": 9288,
+        "rows_remaining": 532621,
+        "samples": [
+          {
+            "source_row": 143,
+            "InvoiceNo": "C536379",
+            "StockCode": "D",
+            "Description": "Discount",
+            "Quantity": -1,
+            "InvoiceDate": "2010-12-01T09:41:00",
+            "UnitPrice": 27.5,
+            "CustomerID": 14527.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 156,
+            "InvoiceNo": "C536383",
+            "StockCode": "35004C",
+            "Description": "SET OF 3 COLOURED  FLYING DUCKS",
+            "Quantity": -1,
+            "InvoiceDate": "2010-12-01T09:49:00",
+            "UnitPrice": 4.65,
+            "CustomerID": 15311.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 237,
+            "InvoiceNo": "C536391",
+            "StockCode": 22556,
+            "Description": "PLASTERS IN TIN CIRCUS PARADE ",
+            "Quantity": -12,
+            "InvoiceDate": "2010-12-01T10:24:00",
+            "UnitPrice": 1.65,
+            "CustomerID": 17548.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 238,
+            "InvoiceNo": "C536391",
+            "StockCode": 21984,
+            "Description": "PACK OF 12 PINK PAISLEY TISSUES ",
+            "Quantity": -24,
+            "InvoiceDate": "2010-12-01T10:24:00",
+            "UnitPrice": 0.29,
+            "CustomerID": 17548.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 239,
+            "InvoiceNo": "C536391",
+            "StockCode": 21983,
+            "Description": "PACK OF 12 BLUE PAISLEY TISSUES ",
+            "Quantity": -24,
+            "InvoiceDate": "2010-12-01T10:24:00",
+            "UnitPrice": 0.29,
+            "CustomerID": 17548.0,
+            "Country": "United Kingdom"
+          }
+        ]
+      },
+      {
+        "rule": "nonpositive_quantity",
+        "description": "Quantity <= 0 após as regras anteriores",
+        "rows_before": 532621,
+        "rows_excluded": 1336,
+        "rows_remaining": 531285,
+        "samples": [
+          {
+            "source_row": 2408,
+            "InvoiceNo": 536589,
+            "StockCode": 21777,
+            "Description": null,
+            "Quantity": -10,
+            "InvoiceDate": "2010-12-01T16:50:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 4349,
+            "InvoiceNo": 536764,
+            "StockCode": "84952C",
+            "Description": null,
+            "Quantity": -38,
+            "InvoiceDate": "2010-12-02T14:42:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 7190,
+            "InvoiceNo": 536996,
+            "StockCode": 22712,
+            "Description": null,
+            "Quantity": -20,
+            "InvoiceDate": "2010-12-03T15:30:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 7191,
+            "InvoiceNo": 536997,
+            "StockCode": 22028,
+            "Description": null,
+            "Quantity": -20,
+            "InvoiceDate": "2010-12-03T15:30:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 7192,
+            "InvoiceNo": 536998,
+            "StockCode": 85067,
+            "Description": null,
+            "Quantity": -6,
+            "InvoiceDate": "2010-12-03T15:30:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          }
+        ]
+      },
+      {
+        "rule": "nonpositive_price",
+        "description": "UnitPrice <= 0 após as regras anteriores",
+        "rows_before": 531285,
+        "rows_excluded": 1181,
+        "rows_remaining": 530104,
+        "samples": [
+          {
+            "source_row": 624,
+            "InvoiceNo": 536414,
+            "StockCode": 22139,
+            "Description": null,
+            "Quantity": 56,
+            "InvoiceDate": "2010-12-01T11:52:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1972,
+            "InvoiceNo": 536545,
+            "StockCode": 21134,
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:32:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1973,
+            "InvoiceNo": 536546,
+            "StockCode": 22145,
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:33:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1974,
+            "InvoiceNo": 536547,
+            "StockCode": 37509,
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:33:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1989,
+            "InvoiceNo": 536549,
+            "StockCode": "85226A",
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:34:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          }
+        ]
+      },
+      {
+        "rule": "missing_description",
+        "description": "Descrição ausente/vazia após as regras anteriores",
+        "rows_before": 530104,
+        "rows_excluded": 0,
+        "rows_remaining": 530104,
+        "samples": []
+      },
+      {
+        "rule": "non_merchandise_code",
+        "description": "StockCode não corresponde a cinco dígitos com sufixo alfabético opcional",
+        "rows_before": 530104,
+        "rows_excluded": 2379,
+        "rows_remaining": 527725,
+        "samples": [
+          {
+            "source_row": 47,
+            "InvoiceNo": 536370,
+            "StockCode": "POST",
+            "Description": "POSTAGE",
+            "Quantity": 3,
+            "InvoiceDate": "2010-12-01T08:45:00",
+            "UnitPrice": 18.0,
+            "CustomerID": 12583.0,
+            "Country": "France"
+          },
+          {
+            "source_row": 388,
+            "InvoiceNo": 536403,
+            "StockCode": "POST",
+            "Description": "POSTAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T11:27:00",
+            "UnitPrice": 15.0,
+            "CustomerID": 12791.0,
+            "Country": "Netherlands"
+          },
+          {
+            "source_row": 1125,
+            "InvoiceNo": 536527,
+            "StockCode": "POST",
+            "Description": "POSTAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T13:04:00",
+            "UnitPrice": 18.0,
+            "CustomerID": 12662.0,
+            "Country": "Germany"
+          },
+          {
+            "source_row": 1425,
+            "InvoiceNo": 536540,
+            "StockCode": "C2",
+            "Description": "CARRIAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:05:00",
+            "UnitPrice": 50.0,
+            "CustomerID": 14911.0,
+            "Country": "EIRE"
+          },
+          {
+            "source_row": 1816,
+            "InvoiceNo": 536544,
+            "StockCode": "DOT",
+            "Description": "DOTCOM POSTAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:32:00",
+            "UnitPrice": 569.77,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          }
+        ]
+      }
+    ],
+    "prepared_rows": 527725,
+    "excluded_rows": 14184,
+    "balance_check": true,
+    "prepared_null_counts": {
+      "InvoiceNo": 0,
+      "StockCode": 0,
+      "Description": 0,
+      "Quantity": 0,
+      "InvoiceDate": 0,
+      "UnitPrice": 0,
+      "CustomerID": 131388,
+      "Country": 0
+    },
+    "prepared_exact_duplicate_extra_rows": 5221,
+    "prepared_customer_missing_retained": 131388,
+    "prepared_quantity_range": {
+      "min": 1,
+      "max": 80995
+    },
+    "prepared_price_range": {
+      "min": 0.04,
+      "max": 649.5
+    },
+    "prepared_nonstandard_invoice_examples": [],
+    "retention_policies": {
+      "raw": "Preservar ZIP e XLSX originais com hashes e origem",
+      "excluded": "Exportar registros separados com source_row e primeiro motivo de exclusão, sem apagar o bruto",
+      "customer_missing": "Preservar NA; não inventar cliente nem excluir venda por ausência de identificação",
+      "duplicates": "Preservar e sinalizar igualdade nas oito colunas; avaliar impacto em etapa futura antes de deduplicar",
+      "outliers": "Manter extremos positivos. O contexto atacadista torna cortes arbitrários por quantidade/preço inadequados sem confirmação externa",
+      "text": "Remover somente espaços no início/fim, sem alterar nomes ou substituir descrições ausentes por suposição",
+      "ids": "InvoiceNo, StockCode e CustomerID são identificadores categóricos, não medidas; converter CustomerID conhecido para texto inteiro sem .0",
+      "time": "Preservar InvoiceDate como datetime sem timezone atribuído, porque a fonte não fornece fuso",
+      "cancelled_originals": "Filtrar a linha C não desfaz automaticamente a venda original. Reconciliação entre venda e cancelamento requer regra específica e está fora do RA1"
+    }
+  },
+  "proposal": {
+    "status": "ACCEPTED: execução real de scripts/data_preparation.py::prepare_data",
+    "scope": "Linhas de mercadorias com quantidade e preço positivos; não representa vendas líquidas de cancelamentos/devoluções",
+    "implementation_path": "scripts/data_preparation.py",
+    "implementation_sha256": "616ef44ebb923c68e12de429a5ffa5e9e48e1e281c7f5c23dc2776f27d51331a",
+    "execution_creates_prepared_files": false,
+    "rule": "Comparação case-insensitive com POST, DOT, C2, M, D, BANK CHARGES, AMAZONFEE, CRUK, B, S e prefixo GIFT_; formato fora do padrão numérico não causa exclusão",
+    "sequential_exclusions": [
+      {
+        "rule": "cancellation",
+        "description": "InvoiceNo começa com C, sem diferenciar maiúsculas/minúsculas",
+        "rows_before": 541909,
+        "rows_excluded": 9288,
+        "rows_remaining": 532621,
+        "samples": [
+          {
+            "source_row": 143,
+            "InvoiceNo": "C536379",
+            "StockCode": "D",
+            "Description": "Discount",
+            "Quantity": -1,
+            "InvoiceDate": "2010-12-01T09:41:00",
+            "UnitPrice": 27.5,
+            "CustomerID": 14527.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 156,
+            "InvoiceNo": "C536383",
+            "StockCode": "35004C",
+            "Description": "SET OF 3 COLOURED  FLYING DUCKS",
+            "Quantity": -1,
+            "InvoiceDate": "2010-12-01T09:49:00",
+            "UnitPrice": 4.65,
+            "CustomerID": 15311.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 237,
+            "InvoiceNo": "C536391",
+            "StockCode": 22556,
+            "Description": "PLASTERS IN TIN CIRCUS PARADE ",
+            "Quantity": -12,
+            "InvoiceDate": "2010-12-01T10:24:00",
+            "UnitPrice": 1.65,
+            "CustomerID": 17548.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 238,
+            "InvoiceNo": "C536391",
+            "StockCode": 21984,
+            "Description": "PACK OF 12 PINK PAISLEY TISSUES ",
+            "Quantity": -24,
+            "InvoiceDate": "2010-12-01T10:24:00",
+            "UnitPrice": 0.29,
+            "CustomerID": 17548.0,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 239,
+            "InvoiceNo": "C536391",
+            "StockCode": 21983,
+            "Description": "PACK OF 12 BLUE PAISLEY TISSUES ",
+            "Quantity": -24,
+            "InvoiceDate": "2010-12-01T10:24:00",
+            "UnitPrice": 0.29,
+            "CustomerID": 17548.0,
+            "Country": "United Kingdom"
+          }
+        ]
+      },
+      {
+        "rule": "invalid_required_fields",
+        "description": "Campos essenciais inválidos, valores não finitos ou quantidade fracionária",
+        "rows_before": 532621,
+        "rows_excluded": 0,
+        "rows_remaining": 532621,
+        "samples": []
+      },
+      {
+        "rule": "non_positive_quantity",
+        "description": "Quantity <= 0 após as regras anteriores",
+        "rows_before": 532621,
+        "rows_excluded": 1336,
+        "rows_remaining": 531285,
+        "samples": [
+          {
+            "source_row": 2408,
+            "InvoiceNo": 536589,
+            "StockCode": 21777,
+            "Description": null,
+            "Quantity": -10,
+            "InvoiceDate": "2010-12-01T16:50:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 4349,
+            "InvoiceNo": 536764,
+            "StockCode": "84952C",
+            "Description": null,
+            "Quantity": -38,
+            "InvoiceDate": "2010-12-02T14:42:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 7190,
+            "InvoiceNo": 536996,
+            "StockCode": 22712,
+            "Description": null,
+            "Quantity": -20,
+            "InvoiceDate": "2010-12-03T15:30:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 7191,
+            "InvoiceNo": 536997,
+            "StockCode": 22028,
+            "Description": null,
+            "Quantity": -20,
+            "InvoiceDate": "2010-12-03T15:30:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 7192,
+            "InvoiceNo": 536998,
+            "StockCode": 85067,
+            "Description": null,
+            "Quantity": -6,
+            "InvoiceDate": "2010-12-03T15:30:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          }
+        ]
+      },
+      {
+        "rule": "non_positive_price",
+        "description": "UnitPrice <= 0 após as regras anteriores",
+        "rows_before": 531285,
+        "rows_excluded": 1181,
+        "rows_remaining": 530104,
+        "samples": [
+          {
+            "source_row": 624,
+            "InvoiceNo": 536414,
+            "StockCode": 22139,
+            "Description": null,
+            "Quantity": 56,
+            "InvoiceDate": "2010-12-01T11:52:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1972,
+            "InvoiceNo": 536545,
+            "StockCode": 21134,
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:32:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1973,
+            "InvoiceNo": 536546,
+            "StockCode": 22145,
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:33:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1974,
+            "InvoiceNo": 536547,
+            "StockCode": 37509,
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:33:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          },
+          {
+            "source_row": 1989,
+            "InvoiceNo": 536549,
+            "StockCode": "85226A",
+            "Description": null,
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:34:00",
+            "UnitPrice": 0.0,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          }
+        ]
+      },
+      {
+        "rule": "non_merchandise_code",
+        "description": "Código explicitamente identificado como frete, taxa, ajuste, desconto, amostra ou voucher",
+        "rows_before": 530104,
+        "rows_excluded": 2343,
+        "rows_remaining": 527761,
+        "samples": [
+          {
+            "source_row": 47,
+            "InvoiceNo": 536370,
+            "StockCode": "POST",
+            "Description": "POSTAGE",
+            "Quantity": 3,
+            "InvoiceDate": "2010-12-01T08:45:00",
+            "UnitPrice": 18.0,
+            "CustomerID": 12583.0,
+            "Country": "France"
+          },
+          {
+            "source_row": 388,
+            "InvoiceNo": 536403,
+            "StockCode": "POST",
+            "Description": "POSTAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T11:27:00",
+            "UnitPrice": 15.0,
+            "CustomerID": 12791.0,
+            "Country": "Netherlands"
+          },
+          {
+            "source_row": 1125,
+            "InvoiceNo": 536527,
+            "StockCode": "POST",
+            "Description": "POSTAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T13:04:00",
+            "UnitPrice": 18.0,
+            "CustomerID": 12662.0,
+            "Country": "Germany"
+          },
+          {
+            "source_row": 1425,
+            "InvoiceNo": 536540,
+            "StockCode": "C2",
+            "Description": "CARRIAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:05:00",
+            "UnitPrice": 50.0,
+            "CustomerID": 14911.0,
+            "Country": "EIRE"
+          },
+          {
+            "source_row": 1816,
+            "InvoiceNo": 536544,
+            "StockCode": "DOT",
+            "Description": "DOTCOM POSTAGE",
+            "Quantity": 1,
+            "InvoiceDate": "2010-12-01T14:32:00",
+            "UnitPrice": 569.77,
+            "CustomerID": null,
+            "Country": "United Kingdom"
+          }
+        ]
+      },
+      {
+        "rule": "missing_description",
+        "description": "Descrição ausente/vazia após as regras anteriores",
+        "rows_before": 527761,
+        "rows_excluded": 0,
+        "rows_remaining": 527761,
+        "samples": []
+      }
+    ],
+    "preparation_summary": {
+      "input_rows": 541909,
+      "prepared_rows": 527761,
+      "excluded_rows": 14148,
+      "input_columns": 8,
+      "prepared_columns": 9,
+      "exclusions_by_reason": {
+        "cancellation": 9288,
+        "non_merchandise_code": 2343,
+        "non_positive_quantity": 1336,
+        "non_positive_price": 1181
+      },
+      "missing_customers_kept": 131421,
+      "exact_duplicate_rows_kept": 5221,
+      "source_rows_unique": true,
+      "date_min": "2010-12-01 08:26:00",
+      "date_max": "2011-12-09 12:50:00"
+    },
+    "prepared_rows": 527761,
+    "excluded_rows": 14148,
+    "balance_check": true,
+    "prepared_null_counts": {
+      "SourceRow": 0,
+      "InvoiceNo": 0,
+      "StockCode": 0,
+      "Description": 0,
+      "Quantity": 0,
+      "InvoiceDate": 0,
+      "UnitPrice": 0,
+      "CustomerID": 131421,
+      "Country": 0
+    },
+    "prepared_schema": {
+      "SourceRow": "int64",
+      "InvoiceNo": "string",
+      "StockCode": "string",
+      "Description": "string",
+      "Quantity": "Int64",
+      "InvoiceDate": "datetime64[us]",
+      "UnitPrice": "Float64",
+      "CustomerID": "string",
+      "Country": "string"
+    },
+    "prepared_exact_duplicate_extra_rows": 5221,
+    "prepared_customer_missing_retained": 131421,
+    "prepared_quantity_range": {
+      "min": 1,
+      "max": 80995
+    },
+    "prepared_price_range": {
+      "min": 0.001,
+      "max": 649.5
+    },
+    "rare_merchandise_rows_retained": 36,
+    "rare_merchandise_codes_retained": [
+      "DCGS0003",
+      "DCGS0004",
+      "DCGS0069",
+      "DCGS0070",
+      "DCGS0076",
+      "DCGSSBOY",
+      "DCGSSGIRL",
+      "PADS"
+    ],
+    "retention_policies": {
+      "raw": "Preservar ZIP e XLSX originais com hashes e origem",
+      "excluded": "Segregar registros com SourceRow e primeiro motivo ExclusionReason, sem apagar o bruto",
+      "customer_missing": "Preservar NA; não inventar cliente nem excluir venda por ausência de identificação",
+      "duplicates": "Preservar e sinalizar igualdade nas oito colunas; avaliar impacto em etapa futura antes de deduplicar",
+      "outliers": "Manter extremos positivos. O contexto atacadista torna cortes arbitrários por quantidade/preço inadequados sem confirmação externa",
+      "text": "Remover somente espaços no início/fim, sem alterar nomes ou substituir descrições ausentes por suposição",
+      "ids": "InvoiceNo, StockCode e CustomerID são identificadores categóricos, não medidas; converter CustomerID conhecido para texto inteiro sem .0",
+      "time": "Preservar InvoiceDate como datetime sem timezone atribuído, porque a fonte não fornece fuso",
+      "cancelled_originals": "Filtrar a linha C não desfaz automaticamente a venda original. Reconciliação entre venda e cancelamento requer regra específica e está fora do RA1",
+      "rare_codes": "Preservar códigos raros de mercadoria. A lista explícita usa as descrições observadas; futuras bases requerem nova inspeção"
+    },
+    "limitations": [
+      "O arquivo não fornece uma chave única original de linha; SourceRow é uma chave técnica para rastrear a origem.",
+      "Duplicatas idênticas são mantidas e sinalizadas pelo diagnóstico, porque igualdade não prova erro de ingestão.",
+      "A classificação dos códigos especiais deriva das descrições observadas, sem cadastro externo completo de produtos.",
+      "Cancelar uma linha C não estorna automaticamente a linha de venda original; esse vínculo não é inferido no RA1."
+    ]
+  }
+}

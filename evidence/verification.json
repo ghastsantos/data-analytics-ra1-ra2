@@ -1,0 +1,23 @@
+{
+  "verified_at_utc": "2026-10-20T17:11:39.150036+00:00",
+  "notebook_code_cells_executed": 14,
+  "notebook_error_outputs": 0,
+  "unit_tests_passed": 7,
+  "source_and_preparation_consistent": true,
+  "streaming_arrivals_validated": 3,
+  "synthetic_events": 6,
+  "notebook_pdf_pages": 13,
+  "notebook_pdf_visual_review": "Todas as páginas inspecionadas; código, tabelas e resultados legíveis.",
+  "report_pages_visually_reviewed": 10,
+  "artifact_sha256": {
+    "projeto_data_analytics.ipynb": "023e3d13905817321d6373ae6e0ce6f3b924bfc4a512ea9ea27cae2c874e9dcb",
+    "docs/relatorio_ra1.docx": "d0bbbff23bfb95023c82b73dd8c55657b552b31cdce6afe9236e0fe8525e3a4e",
+    "docs/projeto_data_analytics.pdf": "b11c43c66df7144b8235f4e41ad8a1fd5a15972c6a51ea56b3e5e97ab921c7cb",
+    "data/processed/sales_prepared.csv": "35a38c054a971b769bc26be3c30aee87cdc8a2780aa3f4cd0c5c6be17130def5",
+    "data/processed/excluded_records.csv": "e07df11765398d14989c10033bf63296ca3263afb0378a00a8331112fb96f085"
+  },
+  "limits": [
+    "Colab não executado nesta sessão; execução integral validada em Linux local.",
+    "Publicação remota, envio no Canvas e ensaio da dupla pendentes."
+  ]
+}

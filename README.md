@@ -14,6 +14,8 @@ O notebook prepara a base histórica Online Retail (RA1) e mostra uma demonstra�
 - `scripts/` e `tests/`: código da preparação e verificações.
 - `evidence/`: fonte, diagnósticos, balanço de linhas e resultados do streaming.
 
+**Repositório:** https://github.com/ghastsantos/data-analytics-ra1-ra2
+
 ## Abrir no Google Colab
 
 1. Envie `projeto_data_analytics.ipynb` ao Colab.
@@ -30,4 +32,4 @@ Uma linha representa um item de uma transação. O recorte não mede vendas líq
 
 ## Antes de enviar
 
-O RA1 pede a URL de um repositório com o notebook executado e este processo documentado no modelo Word. Publiquem o repositório, preencham a URL no relatório e confirmem que a professora tem acesso. O RA2 pede o PDF do notebook com os resultados.
+O RA1 pede a URL de um repositório com o notebook executado e este processo documentado no modelo Word. A URL já está no relatório. O RA2 pede o PDF do notebook com os resultados.

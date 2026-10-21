@@ -30,7 +30,3 @@ Ao final do RA2, os totais por minuto são 55, 30 e 10 GBP. Os dados históricos
 Chen (2015), [Online Retail, UCI](https://archive.ics.uci.edu/dataset/352/online+retail), DOI 10.24432/C5BW33, licença CC BY 4.0. A base original tem 541.909 linhas. O recorte preparado tem 527.761; outras 14.148 linhas estão separadas com seus motivos.
 
 Uma linha representa um item de uma transação. O recorte não mede vendas líquidas ou lucro, porque os cancelamentos não foram ligados às vendas correspondentes.
-
-## Antes de enviar
-
-O RA1 pede a URL de um repositório com o notebook executado e este processo documentado no modelo Word. A URL já está no relatório. O RA2 pede o PDF do notebook com os resultados.

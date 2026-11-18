@@ -1,7 +1,7 @@
 [
   {
     "arrival": 1,
-    "arrived_at_utc": "2026-10-20T17:09:07.087525+00:00",
+    "arrived_at_utc": "2026-11-16T23:19:00.678295+00:00",
     "spark_batch_id": 0,
     "new_rows": 2,
     "windows": {
@@ -13,7 +13,7 @@
   },
   {
     "arrival": 2,
-    "arrived_at_utc": "2026-10-20T17:09:16.116906+00:00",
+    "arrived_at_utc": "2026-11-16T23:19:07.758281+00:00",
     "spark_batch_id": 1,
     "new_rows": 2,
     "windows": {
@@ -29,7 +29,7 @@
   },
   {
     "arrival": 3,
-    "arrived_at_utc": "2026-10-20T17:09:19.500480+00:00",
+    "arrived_at_utc": "2026-11-16T23:19:09.958707+00:00",
     "spark_batch_id": 2,
     "new_rows": 2,
     "windows": {

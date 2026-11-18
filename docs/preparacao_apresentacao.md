@@ -1,4 +1,4 @@
-# Colinha para apresentar o RA1 e o RA2
+# Colinha para apresentar o RA1, o RA2 e o RA3
 
 Não precisa decorar. Leiam juntos, entendam a ideia e usem os títulos para achar cada parte no notebook.
 
@@ -76,3 +76,28 @@ Se as chegadas já aparecem na tela, mostre cada resultado uma vez. Não clique 
 **RA1:** 541.909 no começo; 527.761 preparadas; 14.148 separadas. Uma linha é um item. Não calculamos lucro nem venda líquida.
 
 **RA2:** seis eventos inventados; três chegadas; totais finais de 55, 30 e 10 GBP; 95 GBP é só a soma da demonstração.
+
+## RA3 — análise e regressão
+
+Procure **“RA3.1 Objetivo”**, os gráficos **“RA3.2” a “RA3.4”**, **“RA3.5 Representatividade”** e **“RA3.6 Aplicação supervisionada”**.
+
+### Como explicar
+
+> No RA3, usamos os registros históricos preparados no RA1. A análise descritiva mostra os valores por linha e por dia. Para o modelo, cada observação é um dia, e a previsão usa o histórico recente para estimar o valor bruto dos itens positivos do dia seguinte.
+
+Mostre, nesta ordem: a evolução diária com média móvel; a distribuição por linha em escala logarítmica; e os dez países com maior valor registrado. Para cada figura, diga o que está no eixo e destaque que são registros positivos desta loja, não vendas líquidas do mercado.
+
+Na parte do modelo, explique que o Random Forest recebe os valores de um e sete dias antes, a média dos sete dias anteriores e o dia da semana. Os 80% iniciais do calendário são usados no treino e os 20% finais no teste. O baseline repete o valor do mesmo dia da semana anterior. Compare MAE e RMSE no notebook: ambos estão em GBP, e RMSE penaliza mais os erros grandes.
+
+Use os números que aparecem na tabela executada do RA3. Se o modelo não superar o baseline, diga isso diretamente: o resultado indica que, com esses dados e essa divisão, a regressão não acrescentou precisão em relação à regra simples.
+
+### Se perguntarem sobre o RA3
+
+- **O que exatamente está sendo previsto?** A soma de quantidade vezes preço das linhas positivas de cada dia.
+- **Isso é faturamento ou lucro?** Não. Os cancelamentos não foram conciliados com as compras originais.
+- **Por que separar por data?** Para testar em dias posteriores aos usados no treino e evitar misturar passado e futuro.
+- **Como interpretar MAE e RMSE?** São erros médios em GBP; quanto menores, melhor. RMSE reage mais a erros muito grandes.
+- **Dá para generalizar para o varejo atual?** Não. A base é de uma loja e de 2010 a 2011.
+- **Os países são comparáveis como mercados?** Não. O gráfico descreve somente o volume registrado nesta base.
+
+**Fechamento:** a análise descreve o recorte histórico; as limitações da fonte também limitam as conclusões e as previsões.

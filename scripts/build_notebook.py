@@ -18,9 +18,9 @@ def code(text):
 
 
 md("""
-# Preparação de dados e acompanhamento de vendas de uma loja online
+# Preparação e análise de dados de uma loja online
 
-**PUCPR · Data Analytics · RA1 e RA2**
+**PUCPR · Data Analytics · RA1, RA2 e RA3**
 **Equipe:** Gastão Eduardo e Gustavo Schott
 **Curso:** Sistemas de Informação, 6º período
 **Professora:** Marina de Lara
@@ -31,6 +31,8 @@ e demonstra uma análise simples com novos registros simulados.
 O **RA1** documenta a origem, a qualidade e a preparação dos dados.
 O **RA2** utiliza Apache Spark Structured Streaming para somar o valor de itens
 por janelas fixas de um minuto, conforme chegam novos arquivos.
+O **RA3** analisa o histórico com estatística descritiva, visualizações e uma
+regressão supervisionada do valor diário dos itens positivos.
 
 Os dados históricos reais e os eventos artificiais da demonstração ficam separados.
 Os valores do RA2 não são resultados históricos da loja.
@@ -52,9 +54,9 @@ md("""
 
 Um notebook reúne texto, código e saídas. Uma **célula de código** executa uma etapa;
 uma **célula Markdown** explica o objetivo e a interpretação.
-Pandas organiza os dados em tabelas; PySpark permite usar o motor Apache Spark.
-As versões efetivamente utilizadas aparecem abaixo. Testado com Python 3.12,
-Java 17, pandas 2.3.3 e PySpark 3.5.7.
+Pandas organiza os dados em tabelas; PySpark permite usar o motor Apache Spark;
+Matplotlib cria os gráficos e scikit-learn treina e avalia o modelo do RA3.
+As versões efetivamente utilizadas aparecem abaixo.
 """)
 code("""
 import os
@@ -72,7 +74,8 @@ except ImportError:
 if IN_COLAB:
     subprocess.run(
         [sys.executable, "-m", "pip", "install", "-q",
-         "pandas==2.3.3", "openpyxl==3.1.5", "pyspark==3.5.7"], check=True
+         "pandas==2.3.3", "openpyxl==3.1.5", "pyspark==3.5.7",
+         "matplotlib>=3.8,<4", "scikit-learn>=1.4,<2"], check=True
     )
     java17 = Path("/usr/lib/jvm/java-17-openjdk-amd64")
     if not java17.exists():
@@ -90,6 +93,7 @@ import zipfile
 import pandas as pd
 import numpy as np
 import pyspark
+import matplotlib.pyplot as plt
 from datetime import datetime, timezone
 from IPython.display import display
 
@@ -570,6 +574,229 @@ A pasta nova evita misturar resultados e checkpoints de execuções diferentes.
 O PDF desta entrega foi convertido deste notebook executado e inclui código e saídas.
 Na apresentação, use o notebook: o PDF registra evidências, mas não executa código.
 """)
+md("""
+# RA3 — Análise, visualização e aprendizado de máquina
+
+## RA3.1 Objetivo e unidade de análise
+
+O RA3 descreve o valor dos itens positivos registrados e estima o valor de um
+dia usando o histórico até o dia anterior. A análise descritiva observa cada
+linha de item; o modelo observa cada dia do calendário.
+
+O valor por linha é `Quantity × UnitPrice`. O alvo é a soma diária desses valores.
+Como cancelamentos não foram reconciliados com as compras originais, chamamos a
+medida de **valor bruto dos itens positivos registrados**. Ela não é receita
+líquida, venda confirmada ou lucro.
+""")
+code((ROOT / "scripts/ra3_analysis.py").read_text(encoding="utf-8"))
+code("""
+ra3_stats = descriptive_statistics(loaded)
+display(ra3_stats)
+line_values = add_item_value(loaded)["ItemValueGBP"].astype(float)
+print(f"Linhas analisadas: {len(loaded):,}".replace(",", "."))
+print(f"Valor mediano por linha: GBP {line_values.median():,.2f}")
+print(f"Valor médio por linha: GBP {line_values.mean():,.2f}")
+print(f"Percentil 99 por linha: GBP {line_values.quantile(.99):,.2f}")
+if line_values.mean() > line_values.median():
+    print("A média acima da mediana indica influência de uma cauda de valores altos; os extremos positivos foram mantidos.")
+""")
+
+md("""
+## RA3.2 Visualização 1 — evolução diária
+
+O gráfico mostra o total diário dos itens positivos e uma média móvel de sete dias.
+Os dias sem registros ficam no calendário com valor zero. A linha móvel reduz a
+variação de um dia para facilitar a leitura da tendência; picos continuam visíveis
+nos dados diários e não foram removidos como outliers.
+""")
+code("""
+ra3_daily = build_daily_dataset(loaded)
+daily_distribution = ra3_daily["DailyValueGBP"].describe(
+    percentiles=[.50, .90, .99]
+).rename({"50%": "Mediana", "90%": "P90", "99%": "P99"}).to_frame("Valor diário (GBP)")
+display(daily_distribution.round(2))
+print(f"Dias sem itens positivos: {int(ra3_daily['ItemLines'].eq(0).sum())} de {len(ra3_daily)}")
+ra3_rolling = ra3_daily["DailyValueGBP"].rolling(7, min_periods=7).mean()
+fig, ax = plt.subplots(figsize=(12, 4.5))
+ax.plot(ra3_daily.index, ra3_daily["DailyValueGBP"], color="#4C78A8", alpha=.55,
+        linewidth=1, label="Valor diário")
+ax.plot(ra3_daily.index, ra3_rolling, color="#E45756", linewidth=2,
+        label="Média móvel de 7 dias")
+ax.set(title="Valor bruto diário dos itens positivos — Online Retail",
+       xlabel="Data", ylabel="Valor dos itens (GBP)")
+ax.legend(frameon=False)
+ax.grid(axis="y", alpha=.2)
+fig.tight_layout()
+plt.show()
+print(f"Período: {ra3_daily.index.min().date()} a {ra3_daily.index.max().date()} | dias no calendário: {len(ra3_daily)}")
+print("Interpretação: picos são dias com maior valor registrado; a média móvel destaca a variação de curto prazo, sem transformar o recorte em vendas líquidas.")
+""")
+
+md("""
+## RA3.3 Visualização 2 — distribuição do valor por linha
+
+O eixo horizontal usa escala logarítmica para mostrar valores de ordens de
+grandeza diferentes. As linhas verticais marcam mediana e percentil 90. A
+transformação é visual e não altera os dados usados no modelo.
+""")
+code("""
+bins = np.logspace(np.log10(line_values.min()), np.log10(line_values.max()), 45)
+fig, ax = plt.subplots(figsize=(10, 4.5))
+ax.hist(line_values, bins=bins, color="#72B7B2", edgecolor="white")
+ax.set_xscale("log")
+ax.axvline(line_values.median(), color="#F58518", linestyle="--", linewidth=2,
+           label=f"Mediana: GBP {line_values.median():.2f}")
+ax.axvline(line_values.quantile(.90), color="#B279A2", linestyle=":", linewidth=2,
+           label=f"P90: GBP {line_values.quantile(.90):.2f}")
+ax.set(title="Distribuição do valor bruto por linha de item",
+       xlabel="Quantity × UnitPrice (GBP, escala logarítmica)", ylabel="Número de linhas")
+ax.legend(frameon=False)
+ax.grid(axis="y", alpha=.2)
+fig.tight_layout()
+plt.show()
+print(f"A média (GBP {line_values.mean():.2f}) e a mediana (GBP {line_values.median():.2f}) resumem a assimetria sem excluir observações altas.")
+""")
+
+md("""
+## RA3.4 Visualização 3 — países com maior valor registrado
+
+O gráfico compara os dez países com maior soma do valor bruto dos itens positivos.
+Ele descreve a composição desta base; diferenças refletem o volume de registros e
+não permitem comparar tamanho de mercado ou desempenho atual.
+""")
+code("""
+country_values = (add_item_value(loaded).groupby("Country", as_index=False)
+                  .agg(Linhas=("InvoiceNo", "size"), ValorGBP=("ItemValueGBP", "sum"))
+                  .sort_values("ValorGBP", ascending=False))
+top_countries = country_values.head(10).sort_values("ValorGBP")
+display(country_values.head(10).round({"ValorGBP": 2}))
+fig, ax = plt.subplots(figsize=(10, 5.5))
+ax.barh(top_countries["Country"], top_countries["ValorGBP"] / 1000,
+        color="#54A24B")
+ax.set(title="10 países com maior valor de itens positivos no recorte",
+       xlabel="Valor bruto dos itens (mil GBP)", ylabel="País")
+ax.grid(axis="x", alpha=.2)
+fig.tight_layout()
+plt.show()
+print("Interpretação: o ranking descreve os registros desta loja entre 2010 e 2011; não representa participação no comércio eletrônico em geral.")
+""")
+
+md("""
+## RA3.5 Representatividade dos dados
+
+A base contém o histórico disponível de uma única loja online sediada no Reino
+Unido, entre dezembro de 2010 e dezembro de 2011. Não é uma amostra aleatória de
+todas as lojas, consumidores ou períodos. As observações descrevem essa fonte,
+o catálogo e as regras do recorte; não devem ser generalizadas para o comércio
+eletrônico atual.
+
+O recorte preserva valores positivos extremos e linhas repetidas porque não há
+evidência suficiente para removê-los. Cancelamentos, quantidades não positivas,
+preços não positivos e lançamentos que não são mercadorias foram separados.
+A análise diária não depende de `CustomerID`, que está ausente em parte das linhas.
+""")
+code("""
+missing_customer_share = loaded.CustomerID.isna().mean() * 100
+duplicate_count = int(loaded[[c for c in loaded.columns if c != "SourceRow"]].duplicated().sum())
+print(f"Período: {loaded.InvoiceDate.min().date()} a {loaded.InvoiceDate.max().date()}")
+print(f"Países presentes: {loaded.Country.nunique()} | CustomerID ausente: {missing_customer_share:.2f}%")
+print(f"Linhas idênticas extras preservadas: {duplicate_count:,}".replace(",", "."))
+""")
+
+md("""
+## RA3.6 Aplicação supervisionada — previsão diária por regressão
+
+**Problema preditivo:** estimar o valor bruto dos itens positivos de um dia usando
+o histórico observado até o dia anterior. O alvo numérico contínuo caracteriza
+uma tarefa de regressão.
+
+As entradas são os valores do dia anterior e de sete dias antes, a média dos sete
+dias anteriores e a posição do dia da semana. Os sete primeiros dias sem histórico
+suficiente não entram no ajuste. Os primeiros 80% dos dias formam o treino e os
+20% finais ficam reservados para teste, mantendo a ordem cronológica.
+
+O Random Forest é comparado com um baseline sazonal: o valor observado no mesmo
+dia da semana anterior. A avaliação usa MAE e RMSE, ambas em GBP; RMSE penaliza
+mais os erros grandes. É uma avaliação de um passo à frente: para cada dia de teste,
+os valores realmente observados até o dia anterior estão disponíveis. A importância
+das entradas descreve o modelo e não prova causa.
+""")
+code("""
+ra3_model = fit_daily_value_model(loaded)
+ra3_metrics = ra3_model["metrics"]
+ra3_comparison = ra3_model["comparison"]
+display(ra3_metrics)
+display(ra3_model["importance"].round(3))
+print(f"Treino: {ra3_model['train_days']} dias, até {ra3_model['train_end'].date()}")
+print(f"Teste: {ra3_model['test_days']} dias, de {ra3_model['test_start'].date()} a {ra3_model['test_end'].date()}")
+model_mae = float(ra3_metrics.loc[ra3_metrics["Abordagem"] == "Regressão Random Forest", "MAE (GBP)"].iloc[0])
+baseline_mae = float(ra3_metrics.loc[ra3_metrics["Abordagem"].str.startswith("Baseline"), "MAE (GBP)"].iloc[0])
+if model_mae < baseline_mae:
+    improvement = (baseline_mae - model_mae) / baseline_mae * 100
+    print(f"No teste, o MAE do modelo foi {improvement:.1f}% menor que o baseline (GBP {model_mae:.2f} contra GBP {baseline_mae:.2f}).")
+else:
+    print(f"No teste, o modelo não superou o baseline: MAE de GBP {model_mae:.2f} contra GBP {baseline_mae:.2f}.")
+fig, ax = plt.subplots(figsize=(12, 4.5))
+ax.plot(ra3_comparison.index, ra3_comparison["Real (GBP)"], color="#222222",
+        linewidth=1.8, label="Observado")
+ax.plot(ra3_comparison.index, ra3_comparison["Modelo (GBP)"], color="#4C78A8",
+        linewidth=1.5, label="Random Forest")
+ax.plot(ra3_comparison.index, ra3_comparison["Baseline semanal (GBP)"],
+        color="#F58518", alpha=.8, linewidth=1.2, label="Baseline semanal")
+ax.set(title="Previsão de um dia à frente — período de teste",
+       xlabel="Data", ylabel="Valor bruto dos itens (GBP)")
+ax.legend(frameon=False, ncol=3)
+ax.grid(axis="y", alpha=.2)
+fig.tight_layout()
+plt.show()
+""")
+
+md("""
+## RA3.7 Conclusões, limites e reprodução
+
+As tabelas e os gráficos descrevem o valor dos itens positivos registrados nesta
+loja. A comparação entre o Random Forest e o baseline mostra se as variáveis
+temporais ajudam no período final reservado. O erro em GBP deve ser interpretado
+na escala do alvo e junto com sua distribuição. Se o modelo não superar o baseline,
+sua utilidade preditiva é limitada para este recorte.
+
+O histórico é curto e pertence a uma única loja; o resultado não valida previsões
+para outros anos ou negócios. O alvo não reconcilia cancelamentos e não deve ser
+chamado de receita líquida ou lucro. Não usamos dados de cliente como entrada, não
+fizemos seleção aleatória de linhas e não removemos outliers positivos.
+
+Execute o notebook do início ao fim para reproduzir as análises. Resultados
+numéricos do modelo ficam em `evidence/ra3_results.json`.
+
+### Referências do RA3
+
+- Chen (2015). *Online Retail*, UCI Machine Learning Repository, DOI 10.24432/C5BW33, CC BY 4.0.
+- scikit-learn. [RandomForestRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html), [MAE](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_absolute_error.html) e [RMSE](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.root_mean_squared_error.html).
+- Enunciado RA3, disciplina Data Analytics, PUCPR, 2026.
+""")
+code("""
+ra3_record = {
+    "rows_analyzed": int(len(loaded)),
+    "daily_observations": int(len(ra3_model["daily"])),
+    "daily_target": "sum of positive item Quantity * UnitPrice, GBP",
+    "train_days": int(ra3_model["train_days"]),
+    "test_days": int(ra3_model["test_days"]),
+    "train_end": ra3_model["train_end"].date().isoformat(),
+    "test_start": ra3_model["test_start"].date().isoformat(),
+    "test_end": ra3_model["test_end"].date().isoformat(),
+    "metrics": ra3_metrics.to_dict(orient="records"),
+    "missing_customer_share_percent": round(float(missing_customer_share), 4),
+    "countries": int(loaded.Country.nunique()),
+    "libraries": {"matplotlib": __import__("matplotlib").__version__,
+                  "scikit_learn": __import__("sklearn").__version__},
+    "limitations": ["one store", "2010-12 through 2011-12", "positive item gross value, not net sales or profit",
+                    "one-step-ahead temporal evaluation", "not generalizable to current retail"],
+}
+(ROOT / "evidence/ra3_results.json").write_text(
+    json.dumps(ra3_record, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+print("Resultados do RA3 registrados em evidence/ra3_results.json.")
+""")
+
 code("""
 execution_record = {
     "executed_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -581,19 +808,24 @@ execution_record = {
     "ra1_checks_passed": True, "ra2_checked_arrivals": len(snapshots),
     "ra2_checked_events": sum(item["new_rows"] for item in snapshots),
     "synthetic_total_gbp": "95.00",
+    "ra3_daily_observations": ra3_record["daily_observations"],
+    "ra3_train_days": ra3_record["train_days"],
+    "ra3_test_days": ra3_record["test_days"],
+    "ra3_metrics": ra3_record["metrics"],
+    "ra3_libraries": ra3_record["libraries"],
 }
 (ROOT / "evidence/execution_record.json").write_text(
     json.dumps(execution_record, ensure_ascii=False, indent=2), encoding="utf-8")
-print(json.dumps(execution_record, ensure_ascii=False, indent=2))
+print("Registro de execução atualizado em evidence/execution_record.json.")
 """)
 
 compact_markdown = [
     """
-# RA1 e RA2 — Online Retail
+# RA1, RA2 e RA3 — Online Retail
 
 **Gastão Eduardo e Gustavo Schott · Sistemas de Informação, 6º período · Professora Marina de Lara**
 
-No **RA1**, preparamos o histórico da loja. No **RA2**, mostramos seis eventos fictícios chegando em três momentos.
+No **RA1**, preparamos o histórico da loja. No **RA2**, mostramos seis eventos fictícios chegando em três momentos. No **RA3**, analisamos o histórico e estimamos valores diários.
 
 ### No Google Colab
 1. Envie este arquivo `.ipynb`.
@@ -603,7 +835,7 @@ No **RA1**, preparamos o histórico da loja. No **RA2**, mostramos seis eventos 
     """
 ## Ambiente
 
-Pandas organiza os dados em tabelas. Apache Spark processa os arquivos que chegam no RA2. As versões usadas e os resultados aparecem nas células.
+Pandas organiza os dados; Apache Spark processa os arquivos que chegam no RA2; Matplotlib e scikit-learn apoiam as análises do RA3. As versões usadas aparecem nas células.
 """,
     """
 # RA1 — Ingestão e preparação
@@ -695,6 +927,17 @@ As três chegadas processaram dois eventos cada. Os totais observados conferem c
 
 A demonstração usa uma janela e uma agregação. Não implementa Kafka, armazenamento durável, watermark ou tratamento de falhas de produção.
 """,
+    """
+# RA3 — Análise, visualização e aprendizado de máquina
+
+O RA3 descreve o valor bruto dos itens positivos registrados e estima o valor diário com base no histórico até o dia anterior. A medida não representa receita líquida ou lucro.
+""",
+    "## RA3.2 Visualização 1 — evolução diária\n\nO gráfico mostra totais diários e a média móvel de sete dias. Dias sem registros ficam como zero; picos permanecem nos dados.",
+    "## RA3.3 Visualização 2 — distribuição por linha\n\nA escala logarítmica permite ver a cauda de valores altos. Mediana e P90 estão marcados; nenhum valor foi removido.",
+    "## RA3.4 Visualização 3 — países\n\nO gráfico mostra os dez países com maior soma dos valores positivos neste recorte histórico, não participação de mercado.",
+    "## RA3.5 Representatividade\n\nA base cobre uma loja do Reino Unido entre dezembro de 2010 e dezembro de 2011. Não é amostra aleatória do comércio atual.",
+    "## RA3.6 Regressão supervisionada\n\nO Random Forest estima o valor diário usando lags e dia da semana. A divisão é cronológica (80%/20%) e a comparação usa um baseline sazonal, MAE e RMSE.",
+    "## RA3.7 Conclusões e reprodução\n\nOs resultados e limitações são interpretados junto da distribuição do alvo. Execute o notebook do início ao fim para reproduzir; métricas ficam em `evidence/ra3_results.json`.",
 ]
 markdown_cells = [cell for cell in cells if cell["cell_type"] == "markdown"]
 if len(markdown_cells) != len(compact_markdown):

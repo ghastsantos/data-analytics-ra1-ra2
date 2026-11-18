@@ -1,0 +1,35 @@
+{
+  "rows_analyzed": 527761,
+  "daily_observations": 374,
+  "daily_target": "sum of positive item Quantity * UnitPrice, GBP",
+  "train_days": 293,
+  "test_days": 74,
+  "train_end": "2011-09-26",
+  "test_start": "2011-09-27",
+  "test_end": "2011-12-09",
+  "metrics": [
+    {
+      "Abordagem": "Regressão Random Forest",
+      "MAE (GBP)": 13607.02,
+      "RMSE (GBP)": 23879.93
+    },
+    {
+      "Abordagem": "Baseline: mesmo dia da semana anterior",
+      "MAE (GBP)": 14587.53,
+      "RMSE (GBP)": 24896.61
+    }
+  ],
+  "missing_customer_share_percent": 24.9016,
+  "countries": 38,
+  "libraries": {
+    "matplotlib": "3.11.2",
+    "scikit_learn": "1.7.2"
+  },
+  "limitations": [
+    "one store",
+    "2010-12 through 2011-12",
+    "positive item gross value, not net sales or profit",
+    "one-step-ahead temporal evaluation",
+    "not generalizable to current retail"
+  ]
+}

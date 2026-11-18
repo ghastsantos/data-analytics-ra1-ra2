@@ -1,0 +1,32 @@
+{
+  "verified_at_utc": "2026-11-16T23:23:39+00:00",
+  "notebook_code_cells_executed": 22,
+  "notebook_error_outputs": 0,
+  "ra3_rows_analyzed": 527761,
+  "daily_observations": 374,
+  "train_days": 293,
+  "test_days": 74,
+  "test_period": [
+    "2011-09-27",
+    "2011-12-09"
+  ],
+  "mae_gbp": {
+    "random_forest": 13607.02,
+    "weekly_baseline": 14587.53,
+    "relative_improvement_percent": 6.7
+  },
+  "rmse_gbp": {
+    "random_forest": 23879.93,
+    "weekly_baseline": 24896.61,
+    "relative_improvement_percent": 4.1
+  },
+  "pdf_pages": 19,
+  "pdf_pages_visually_reviewed": 19,
+  "pdf_pages_with_extractable_text": 19,
+  "figures_in_notebook": 4,
+  "limitations": [
+    "The dataset is from one store and covers 2010-12 through 2011-12.",
+    "The target is gross value of positive item records, not net sales or profit.",
+    "Forecast evaluation is one step ahead and does not establish generalization to other stores or periods."
+  ]
+}

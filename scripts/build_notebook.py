@@ -1,4 +1,4 @@
-"""Monta o notebook autocontido; não fabrica nem preenche saídas de execução."""
+"""Monta o notebook a partir das células e dos módulos de análise."""
 from pathlib import Path
 import json
 import textwrap
@@ -18,51 +18,28 @@ def code(text):
 
 
 md("""
-# Preparação e análise de dados de uma loja online
+# RA1, RA2 e RA3 — Online Retail
 
-**PUCPR · Data Analytics · RA1, RA2 e RA3**
-**Equipe:** Gastão Eduardo e Gustavo Schott
-**Curso:** Sistemas de Informação, 6º período
-**Professora:** Marina de Lara
-**Entrega:** 21/10/2026
+**Gastão Eduardo e Gustavo Schott · Sistemas de Informação, 6º período · Professora Marina de Lara**
 
-Este projeto prepara uma base real de itens de transações de uma loja online
-e demonstra uma análise simples com novos registros simulados.
-O **RA1** documenta a origem, a qualidade e a preparação dos dados.
-O **RA2** utiliza Apache Spark Structured Streaming para somar o valor de itens
-por janelas fixas de um minuto, conforme chegam novos arquivos.
-O **RA3** analisa o histórico com estatística descritiva, visualizações e uma
-regressão supervisionada do valor diário dos itens positivos.
+No **RA1**, preparamos a base Online Retail. No **RA2**, demonstramos o processamento de seis eventos fictícios no Spark. No **RA3**, voltamos à base histórica para analisar os registros da loja e testar uma previsão de um dia à frente.
 
-Os dados históricos reais e os eventos artificiais da demonstração ficam separados.
-Os valores do RA2 não são resultados históricos da loja.
+### No Google Colab
+1. Envie este arquivo `.ipynb`.
+2. Selecione **Ambiente de execução > Executar tudo**.
 
-## Como executar
-
-Execute as células de cima para baixo. Em Google Colab, faça upload deste `.ipynb`
-e use **Ambiente de execução > Executar tudo**. A primeira execução precisa de
-internet para instalar dependências e obter a base oficial (aproximadamente 23 MB).
-No ambiente local, instale `requirements.txt` e tenha Java 17 disponível.
-Cada execução do streaming usa uma pasta nova e não apaga execuções anteriores.
-
-Para a apresentação, execute a preparação antecipadamente e mostre as três
-chegadas de dados do RA2, uma célula de cada vez.
+A primeira execução instala as dependências e baixa a base da UCI. Para rodar localmente, instale `requirements.txt`, use Java 17 e inicie o notebook na raiz do repositório.
 """)
 
 md("""
 ## Ambiente
 
-Um notebook reúne texto, código e saídas. Uma **célula de código** executa uma etapa;
-uma **célula Markdown** explica o objetivo e a interpretação.
-Pandas organiza os dados em tabelas; PySpark permite usar o motor Apache Spark;
-Matplotlib cria os gráficos e scikit-learn treina e avalia o modelo do RA3.
-As versões efetivamente utilizadas aparecem abaixo.
+Usamos pandas para preparar os dados, Spark para o streaming, Matplotlib para os gráficos e scikit-learn para a regressão.
 """)
 code("""
 import os
 import sys
 import subprocess
-import importlib.util
 from pathlib import Path
 
 try:
@@ -109,48 +86,26 @@ print("Java:", java_version)
 """)
 
 md("""
-# RA1 — Ingestão e preparação dos dados
+# RA1 — Ingestão e preparação
 
-## RA1.1 Problema, objetivo e perguntas
+## Problema e objetivo
 
-Uma loja online precisa de registros consistentes para acompanhar suas transações.
-Dados ausentes, tipos inadequados e registros de frete, ajustes ou cancelamentos
-podem mudar a interpretação de uma análise de mercadorias.
+Uma loja precisa de registros organizados para analisar suas transações. O objetivo aqui é conferir a base Online Retail e preparar registros positivos de mercadorias, de todos os países e durante o período disponível.
 
-**Objetivo:** preparar registros positivos de mercadorias da base Online Retail,
-documentando as verificações e decisões, para apoiar análises posteriores.
-O recorte histórico abrange o período disponibilizado pela fonte, de dezembro de
-2010 a dezembro de 2011, e todos os países presentes na base.
+**Perguntas para análises futuras:**
+1. Como o valor dos registros positivos varia por dia?
+2. Quais produtos têm maior quantidade registrada?
+3. No RA2, como os valores por minuto mudam quando chegam novos eventos?
 
-**Unidade de observação:** uma linha representa um item registrado em uma transação.
-Um mesmo `InvoiceNo` pode conter vários itens; contar linhas não equivale a contar pedidos.
-
-| ID | Pergunta que orienta o projeto | Dados necessários |
-|---|---|---|
-| P1 | Como o valor dos registros positivos de mercadorias varia por dia no período disponível? | InvoiceDate, Quantity, UnitPrice e regras do recorte |
-| P2 | Quais produtos apresentam maior quantidade registrada nesse recorte? | StockCode, Description, Quantity |
-| P3 | Na simulação, como o total dos itens por minuto se atualiza quando novos registros chegam? | Horário do evento, quantidade e preço dos eventos simulados |
-
-P1 e P2 orientam a preparação para etapas posteriores; não são respondidas no RA1.
-O RA2 demonstra P3. A base preparada **não representa vendas líquidas, lucro ou
-receita contábil**: separar uma linha de cancelamento não desfaz a venda original.
-Não há chave de linha de transação que permita afirmar que toda repetição é erro.
+No RA1, preparamos os dados; não respondemos às duas primeiras perguntas nem calculamos lucro ou vendas líquidas. Uma linha é um item da transação, não necessariamente um pedido inteiro.
 """)
 
 md("""
 ## RA1.2 Fonte e ingestão
 
-**Fonte:** Chen, D. (2015). *Online Retail*. UCI Machine Learning Repository.
-**DOI:** https://doi.org/10.24432/C5BW33
-**Página:** https://archive.ics.uci.edu/dataset/352/online+retail
-**Licença:** Creative Commons Attribution 4.0 (CC BY 4.0).
-**Origem:** transações de uma loja online sediada no Reino Unido; vários clientes
-são atacadistas. Preços em libras esterlinas (GBP).
-**Arquivo:** Excel `Online Retail.xlsx`, planilha `Online Retail`, oito colunas.
+**Fonte:** Chen (2015), *Online Retail*, UCI Machine Learning Repository. [Página da base](https://archive.ics.uci.edu/dataset/352/online+retail) · DOI 10.24432/C5BW33 · Licença CC BY 4.0.
 
-A ingestão baixa o ZIP oficial apenas quando necessário, extrai somente o arquivo
-esperado e lê a planilha com `openpyxl`. A comparação SHA-256 identifica a versão
-dos dados. O código não executa fórmulas, macros ou instruções do conteúdo.
+A base contém transações de uma loja do Reino Unido, de 2010 a 2011, com preços em GBP. O arquivo é um Excel com oito colunas. O código baixa o ZIP oficial, confere seu hash e lê a planilha `Online Retail`.
 """)
 code("""
 SOURCE_URL = "https://archive.ics.uci.edu/static/public/352/online%2Bretail.zip"
@@ -191,22 +146,11 @@ display(raw.head(3)[["InvoiceDate", "Description", "Country"]])
 """)
 
 md("""
-## RA1.3 Compreensão e diagnóstico de qualidade
+## RA1.3 Qualidade dos dados
 
-| Atributo | Significado | Tipo de uso | Unidade ou domínio |
-|---|---|---|---|
-| InvoiceNo | Identificador da transação; prefixo C indica cancelamento | Texto | Código categórico, pode se repetir entre itens |
-| StockCode | Identificador do produto ou de outro lançamento | Texto | Código categórico |
-| Description | Descrição do item | Texto | Nome ou descrição do lançamento |
-| Quantity | Quantidade registrada naquela linha | Inteiro | Unidades; sinais precisam de interpretação |
-| InvoiceDate | Data e hora do registro | Data e hora | Fonte não informa fuso horário |
-| UnitPrice | Preço por unidade | Decimal numérico | GBP, libras esterlinas |
-| CustomerID | Identificador do cliente | Texto anulável | Não é uma medida; pode estar ausente |
-| Country | País do cliente | Texto | Categoria geográfica |
+As oito colunas são: `InvoiceNo` (transação), `StockCode` e `Description` (item), `Quantity`, `InvoiceDate`, `UnitPrice`, `CustomerID` e `Country`.
 
-Os controles abaixo são verificações de qualidade, não análises de desempenho da loja.
-Um registro pode apresentar mais de um sinal; **não somamos as contagens desta
-tabela para calcular exclusões**. O balanço sem sobreposição aparece na preparação.
+Uma fatura pode aparecer em várias linhas. As contagens de qualidade podem se sobrepor; não devem ser somadas para calcular exclusões. O balanço sem sobreposição aparece na próxima etapa.
 """)
 code("""
 description_text = raw.Description.astype("string")
@@ -230,38 +174,18 @@ display(raw[["Quantity", "UnitPrice"]].describe(percentiles=[0.5, 0.99]).T)
 quality.to_csv(ROOT / "evidence/quality_checks.csv", index=False)
 """)
 md("""
-**Interpretação do diagnóstico.** A identificação do cliente não é necessária para
-agrupar itens por produto ou horário; seus valores ausentes podem ser mantidos.
-Quantidade negativa pode representar cancelamento ou ajuste. Preço zero ou negativo
-não entra no recorte de registros positivos, mas não é automaticamente um erro de digitação.
-
-As repetições exatas são sinalizadas e mantidas: sem um identificador de linha fornecido
-pela loja não podemos comprovar duplicidade acidental. Isso limita futuras somas,
-que representam registros observados e podem incluir repetições.
-
-Quantidades ou preços altos merecem revisão, mas a fonte inclui atacadistas;
-não removemos extremos somente por distância da média ou de um percentil.
-O código de identificação é texto, mesmo quando seus caracteres são números.
+Clientes sem ID foram mantidos: ainda é possível usar o item e o horário. Linhas idênticas foram sinalizadas e mantidas porque a fonte não fornece uma chave única de linha. Quantidades e preços positivos extremos também foram mantidos; a loja atende atacadistas. Cancelamentos e valores não positivos precisam ser interpretados, não tratados automaticamente como erro.
 """)
 
 md("""
-## RA1.4 Limpeza e preparação
+## RA1.4 Preparação
 
-| Decisão | Ação e justificativa |
-|---|---|
-| D1 | Padronizar textos removendo espaços externos, tratar IDs como texto, datas como datetime e medidas como números. Não inventar valores. |
-| D2 | Separar cancelamentos e registros sem quantidade/preço positivos. O objetivo é acompanhar registros positivos; não calcular vendas líquidas. |
-| D3 | Separar códigos observados de frete, taxas, ajustes manuais, descontos, amostras e vouchers. Preservar códigos incomuns de mercadorias, como DCGSSBOY e PADS. |
-| D4 | Preservar clientes ausentes, repetições exatas e extremos positivos, com suas limitações documentadas. |
-| D5 | Adicionar SourceRow, que aponta para a linha original do Excel, e salvar cada exclusão com seu primeiro motivo aplicável. |
+- Textos padronizados; datas e números convertidos; identificadores tratados como texto.
+- Campos essenciais inválidos, cancelamentos, quantidades ou preços não positivos e códigos de frete, taxas, ajustes ou vouchers ficam separados.
+- Clientes ausentes, repetições, extremos positivos e códigos raros de produtos são preservados.
+- Cada linha mantém sua origem no Excel (`SourceRow`) e, se separada, recebe o primeiro motivo aplicável.
 
-A lista de códigos fora do recorte foi definida a partir das descrições da própria
-base: POST e DOT (postagem), C2 (transporte), BANK CHARGES e AMAZONFEE (taxas),
-CRUK (comissão), D (desconto), B (ajuste), M/m (manual), S (amostras) e GIFT_ (vouchers).
-Essa classificação é operacional e deve ser revista para uma fonte diferente.
-Não rejeitamos um produto apenas porque seu código foge de um formato numérico.
-
-A função abaixo contém integralmente as regras usadas pelo projeto.
+A função abaixo contém as regras usadas na preparação.
 """)
 code((ROOT / "scripts/data_preparation.py").read_text(encoding="utf-8"))
 code("""
@@ -289,18 +213,11 @@ display(excluded[["SourceRow", "InvoiceNo", "StockCode", "ExclusionReason"]].hea
 """)
 
 md("""
-## RA1.5 Conjunto resultante e validação
+## RA1.5 Resultado e validação
 
-**Saída principal:** `data/processed/sales_prepared.csv`. Mantém as oito variáveis
-da fonte e acrescenta `SourceRow`. Uma linha continua sendo um item registrado,
-agora dentro do recorte positivo de mercadorias.
+O arquivo preparado contém **527.761 linhas**; **14.148** ficaram separadas com justificativa. O balanço é `541.909 = 527.761 + 14.148`.
 
-**Saída de rastreabilidade:** `data/processed/excluded_records.csv`, com as linhas
-fora do recorte e `ExclusionReason`. Os dados brutos permanecem intactos.
-
-Os testes a seguir comprovam consistência e o balanço das linhas. Também reabrimos
-o CSV para verificar que o arquivo efetivamente salvo pode ser utilizado depois.
-CSV não armazena um esquema de tipos: por isso a releitura define os tipos dos IDs.
+`sales_prepared.csv` contém os registros do recorte. `excluded_records.csv` mantém as linhas separadas e seus motivos. As verificações confirmam campos essenciais, quantidades e preços positivos, origem única e balanço completo.
 """)
 code("""
 essential = ["InvoiceNo", "StockCode", "Description", "Quantity", "InvoiceDate", "UnitPrice", "Country"]
@@ -332,72 +249,28 @@ print("Todas as verificações de consistência e releitura passaram.")
 comparison.to_csv(ROOT / "evidence/before_after.csv", index=False)
 """)
 md("""
-**Limitações remanescentes:** clientes ausentes não foram recuperados; repetições e
-extremos permanecem identificados, sem confirmação externa de sua natureza.
-Cancelamentos não foram reconciliados com vendas originais. O significado de códigos
-especiais foi inferido das descrições observadas, sem um catálogo oficial complementar.
-O horário histórico não recebeu fuso inventado. A amostra é de uma loja e de um período
-histórico específico; não representa todo o comércio online nem o mercado atual.
+### Limites e reprodução
 
-## RA1.6 Organização e reprodução
+A base cobre uma loja e um período histórico específico. Não representa todo o comércio online. O recorte não é receita líquida nem lucro: não ligamos cada cancelamento à venda correspondente.
 
-O notebook contém todo o código necessário. Os scripts e testes do repositório
-permitem reconstruir e verificar o material; as explicações e saídas também estão
-neste arquivo. Para repetir: preparar ambiente, executar as células em ordem,
-conferir as mensagens de validação e localizar as saídas em `data/processed` e `evidence`.
-
-O arquivo `evidence/execution_record.json`, gerado ao final, registra o ambiente e
-o horário da execução. A publicação do repositório e seu endereço devem ser
-confirmados pela equipe antes de enviar a atividade no Canvas.
-
-## RA1.7 Referências
-
-- Chen, D. (2015). Online Retail. UCI Machine Learning Repository. DOI: 10.24432/C5BW33. CC BY 4.0.
-- pandas. Documentação de leitura Excel e manipulação de dados: https://pandas.pydata.org/docs/
-- Apache Spark. Structured Streaming Programming Guide 3.5.7: https://spark.apache.org/docs/3.5.7/structured-streaming-programming-guide.html
-- Enunciados RA1 e RA2 e modelo de documentação disponibilizados na disciplina Data Analytics, PUCPR, 2026.
-
-Fontes públicas consultadas em 15/10/2026. Os resultados de qualidade acima foram
-medidos no arquivo, em vez de presumidos a partir da descrição do catálogo.
+O notebook contém o processo de ingestão e preparação. A documentação de entrega acompanha o template da disciplina. Fonte: Chen (2015), *Online Retail*, UCI Machine Learning Repository, DOI 10.24432/C5BW33, CC BY 4.0.
 """)
 
 md("""
-# RA2 — Processamento em streaming
+# RA2 — Spark Structured Streaming
 
-## RA2.1 Objetivo e relação com o RA1
+## Objetivo
 
-**Pergunta:** como o valor total de itens por minuto se atualiza quando novos registros chegam?
-Usamos o cenário A do enunciado: a fonte histórica é estática e a chegada de novos
-registros é simulada. Dois produtos do conjunto preparado dão contexto aos eventos.
-Quantidade, preço e horários da demonstração são artificiais e explicitamente identificados.
+Pergunta: como a soma do valor dos itens por minuto muda conforme chegam novos eventos? Usamos o cenário do enunciado com uma fonte estática e chegadas simuladas.
 
-**Análise única:** soma de `Quantity × UnitPrice` em GBP por janela tumbling de um minuto.
-A contagem de eventos é uma evidência auxiliar de processamento.
-
-Em processamento de lote (batch), lemos um conjunto finito de uma vez.
-No streaming, o Spark acompanha uma pasta e processa novos arquivos à medida que chegam.
-Esta implementação usa micro-lotes: pequenos lotes incrementais, sem reler a base histórica.
+A única análise é `Quantity × UnitPrice` por janela de um minuto. Os eventos são fictícios; os códigos e nomes de dois produtos vêm do conjunto preparado no RA1.
 """)
 md("""
-## RA2.2 Fonte dos eventos e resultados esperados
+## RA2.2 Eventos simulados
 
-Os seis eventos serão publicados em três arquivos, em momentos distintos.
-O campo `event_time` representa quando a venda fictícia ocorreu; o instante de publicação
-representa quando o sistema a recebeu. Os dois conceitos não precisam coincidir.
-Somente para a simulação, adotamos UTC, sem alterar o horário histórico da fonte.
+São seis eventos fictícios em três arquivos, dois por chegada. Horários, quantidades e preços foram criados para a demonstração. A hora no evento (`event_time`) determina a janela; a hora em que o arquivo chega ao Spark pode ser diferente.
 
-| Chegada | Evento | Horário do evento | Quantidade | Preço GBP | Valor GBP |
-|---|---|---|---:|---:|---:|
-| 1 | SIM001 | 10:00:05 | 2 | 10,00 | 20,00 |
-| 1 | SIM002 | 10:00:30 | 1 | 5,00 | 5,00 |
-| 2 | SIM003 | 10:00:45 | 3 | 10,00 | 30,00 |
-| 2 | SIM004 | 10:01:00 | 4 | 5,00 | 20,00 |
-| 3 | SIM005 | 10:01:20 | 1 | 10,00 | 10,00 |
-| 3 | SIM006 | 10:02:05 | 2 | 5,00 | 10,00 |
-
-**Antes de executar**, o resultado esperado é: chegada 1 = 25,00 na primeira janela;
-chegada 2 = 55,00 na primeira e 20,00 na segunda; chegada 3 = 55,00, 30,00 e 10,00.
-Esses valores, calculados manualmente, serão comparados com a saída real do Spark.
+Resultados esperados: chegada 1 → **25 GBP**; chegada 2 → **55 e 20 GBP**; chegada 3 → **55, 30 e 10 GBP**. Soma final: **95 GBP**.
 """)
 code("""
 import uuid
@@ -445,22 +318,13 @@ display(pd.DataFrame(events)[["event_id", "event_time", "StockCode", "Quantity",
 print("Eventos artificiais; códigos e descrições vêm do conjunto preparado no RA1.")
 """)
 md("""
-## RA2.3 Janela temporal e consulta contínua
+## RA2.3 Janela e consulta
 
-Uma janela **tumbling** tem duração fixa e não se sobrepõe à próxima.
-Aqui, duração e deslocamento são de um minuto: [10:00, 10:01), [10:01, 10:02) etc.
-O colchete inclui o início; o parêntese exclui o fim. Assim, o evento exatamente
-às 10:01:00 pertence à segunda janela.
+A janela **tumbling** dura um minuto e não se sobrepõe à seguinte. O início entra e o fim não: `[10:00, 10:01)`. Por isso, o evento das 10:01:00 pertence à janela que começa às 10:01.
 
-`readStream` acompanha os arquivos novos. `window` agrupa pelo horário do evento.
-`sum` calcula o total. `writeStream` mantém a consulta ativa.
-O preço usa `DecimalType` para evitar erro de representação binária no cálculo monetário.
+`readStream` acompanha novos arquivos, `window` agrupa pelo horário do evento e `sum` soma os valores. `writeStream` atualiza a tabela da demonstração em memória. Ela não é armazenamento permanente de produção.
 
-O destino em memória e o modo `complete` mostram toda a tabela de resultados a cada
-atualização. São adequados à pequena demonstração. Não implementamos política de
-atrasos/watermark nem retenção limitada de estado; um fluxo de produção exigiria
-essas decisões e um destino persistente. O checkpoint local acompanha esta execução,
-mas não torna a tabela em memória um armazenamento durável.
+Referência: [guia oficial do Spark Structured Streaming 3.5.7](https://spark.apache.org/docs/3.5.7/structured-streaming-programming-guide.html).
 """)
 code("""
 schema = T.StructType([
@@ -521,19 +385,15 @@ def publish_batch(number, batch_events, expected):
     print("Resultado conferido com a conta manual.")
 """)
 md("""
-## RA2.4 Três chegadas e evidências de atualização
-
-**Chegada 1:** dois eventos na primeira janela. Esperado: 2 × 10 + 1 × 5 = 25 GBP.
+## Chegada 1: `20 + 5 = 25 GBP` na janela 10:00.
 """)
 code('publish_batch(1, events[:2], {"10:00:00": ("25.00", 2)})')
 md("""
-**Chegada 2:** um evento acrescenta 30 GBP à primeira janela; outro abre a segunda
-com 20 GBP. O evento às 10:01:00 comprova a regra da fronteira entre janelas.
+## Chegada 2: a janela 10:00 passa a 55 GBP; às 10:01 começa outra com 20 GBP.
 """)
 code('publish_batch(2, events[2:4], {"10:00:00": ("55.00", 3), "10:01:00": ("20.00", 1)})')
 md("""
-**Chegada 3:** a segunda janela recebe mais 10 GBP e a terceira recebe 10 GBP.
-O resultado final esperado é 55, 30 e 10 GBP, com seis eventos ao todo.
+## Chegada 3: a janela 10:01 passa a 30 GBP e a janela 10:02 começa com 10 GBP.
 """)
 code('publish_batch(3, events[4:], {"10:00:00": ("55.00", 3), "10:01:00": ("30.00", 2), "10:02:00": ("10.00", 1)})')
 code("""
@@ -548,74 +408,43 @@ print("Consulta encerrada:", not query.isActive)
 spark.stop()
 """)
 md("""
-## RA2.5 Interpretação e limites
+## RA2.5 Resultado e limites
 
-A primeira janela passou de 25 para 55 GBP após a chegada 2; a segunda passou de 20
-para 30 GBP após a chegada 3. Isso demonstra a atualização de uma agregação com novos
-registros, além da abertura de uma nova janela. Cada chegada foi confirmada por
-`numInputRows = 2` em um `batchId` diferente do Spark.
+As três chegadas processaram dois eventos cada. Os totais observados conferem com a conta manual. São resultados da simulação, não conclusões sobre as vendas históricas.
 
-O evento na fronteira 10:01:00 foi atribuído à janela que começa às 10:01.
-A soma final de 95 GBP coincide com o cálculo manual dos seis eventos.
-São resultados da simulação, não conclusões sobre as vendas históricas da loja.
-
-Usamos uma única análise e um único tipo de janela, conforme o escopo do RA2.
-O fluxo é pequeno e controlado: eventos válidos, uma publicação por arquivo,
-sem reenvios duplicados, sem interrupção durante a demonstração.
-Não foram avaliados throughput, escalabilidade ou recuperação de falhas de produção.
-
-## RA2.6 Reprodução e demonstração
-
-Para repetir a demonstração, execute novamente a partir da criação do Spark e das
-pastas de execução (RA2.2), depois RA2.3 e as três chegadas em RA2.4.
-Se interromper a execução no meio, encerre a consulta com `query.stop()` antes de recomeçar.
-A pasta nova evita misturar resultados e checkpoints de execuções diferentes.
-
-O PDF desta entrega foi convertido deste notebook executado e inclui código e saídas.
-Na apresentação, use o notebook: o PDF registra evidências, mas não executa código.
+A demonstração usa uma janela e uma agregação. Não implementa Kafka, armazenamento durável, watermark ou tratamento de falhas de produção.
 """)
 md("""
-# RA3 — Análise, visualização e aprendizado de máquina
+# RA3 — Análise, visualização e regressão
 
-## RA3.1 Objetivo e unidade de análise
+## RA3.1 Valor por linha
 
-O RA3 descreve o valor dos itens positivos registrados e estima o valor de um
-dia usando o histórico até o dia anterior. A análise descritiva observa cada
-linha de item; o modelo observa cada dia do calendário.
+Multiplicamos `Quantity × UnitPrice` em cada linha do recorte do RA1. Como os cancelamentos foram separados sem conciliação com as compras originais, a soma mede o valor bruto dos itens positivos registrados.
 
-O valor por linha é `Quantity × UnitPrice`. O alvo é a soma diária desses valores.
-Como cancelamentos não foram reconciliados com as compras originais, chamamos a
-medida de **valor bruto dos itens positivos registrados**. Ela não é receita
-líquida, venda confirmada ou lucro.
+A mediana por linha foi de 9,90 GBP, enquanto a média chegou a 19,46 GBP. A diferença aparece no histograma, que mostra poucas linhas com valores muito acima da mediana.
 """)
 code((ROOT / "scripts/ra3_analysis.py").read_text(encoding="utf-8"))
 code("""
-ra3_stats = descriptive_statistics(loaded)
-display(ra3_stats)
-line_values = add_item_value(loaded)["ItemValueGBP"].astype(float)
-print(f"Linhas analisadas: {len(loaded):,}".replace(",", "."))
-print(f"Valor mediano por linha: GBP {line_values.median():,.2f}")
-print(f"Valor médio por linha: GBP {line_values.mean():,.2f}")
-print(f"Percentil 99 por linha: GBP {line_values.quantile(.99):,.2f}")
-if line_values.mean() > line_values.median():
-    print("A média acima da mediana indica influência de uma cauda de valores altos; os extremos positivos foram mantidos.")
+# Mostra as estatísticas por linha e guarda os valores usados nos gráficos.
+display(descriptive_statistics(loaded))
+valued_items = add_item_value(loaded)
+line_values = valued_items["ItemValueGBP"]
 """)
 
 md("""
-## RA3.2 Visualização 1 — evolução diária
+## RA3.2 Evolução diária
 
-O gráfico mostra o total diário dos itens positivos e uma média móvel de sete dias.
-Os dias sem registros ficam no calendário com valor zero. A linha móvel reduz a
-variação de um dia para facilitar a leitura da tendência; picos continuam visíveis
-nos dados diários e não foram removidos como outliers.
+Em 69 dos 374 dias, o recorte não tem itens positivos registrados. Preenchemos esses dias com zero para manter o calendário contínuo. A média móvel de sete dias suaviza as oscilações, e a linha dos totais diários mostra onde ocorreram os picos.
 """)
 code("""
+# Resume os totais diários e conta os dias sem registros.
 ra3_daily = build_daily_dataset(loaded)
 daily_distribution = ra3_daily["DailyValueGBP"].describe(
     percentiles=[.50, .90, .99]
 ).rename({"50%": "Mediana", "90%": "P90", "99%": "P99"}).to_frame("Valor diário (GBP)")
 display(daily_distribution.round(2))
 print(f"Dias sem itens positivos: {int(ra3_daily['ItemLines'].eq(0).sum())} de {len(ra3_daily)}")
+# Compara os totais diários com a média móvel de sete dias.
 ra3_rolling = ra3_daily["DailyValueGBP"].rolling(7, min_periods=7).mean()
 fig, ax = plt.subplots(figsize=(12, 4.5))
 ax.plot(ra3_daily.index, ra3_daily["DailyValueGBP"], color="#4C78A8", alpha=.55,
@@ -628,19 +457,16 @@ ax.legend(frameon=False)
 ax.grid(axis="y", alpha=.2)
 fig.tight_layout()
 plt.show()
-print(f"Período: {ra3_daily.index.min().date()} a {ra3_daily.index.max().date()} | dias no calendário: {len(ra3_daily)}")
-print("Interpretação: picos são dias com maior valor registrado; a média móvel destaca a variação de curto prazo, sem transformar o recorte em vendas líquidas.")
 """)
 
 md("""
-## RA3.3 Visualização 2 — distribuição do valor por linha
+## RA3.3 Distribuição do valor por linha
 
-O eixo horizontal usa escala logarítmica para mostrar valores de ordens de
-grandeza diferentes. As linhas verticais marcam mediana e percentil 90. A
-transformação é visual e não altera os dados usados no modelo.
+Em 90% das linhas, o valor ficou em até 31,60 GBP. O eixo horizontal usa escala logarítmica para mostrar no mesmo gráfico as linhas de menor valor e os extremos positivos mantidos no RA1.
 """)
 code("""
-bins = np.logspace(np.log10(line_values.min()), np.log10(line_values.max()), 45)
+# Mostra a distribuição dos valores por linha em escala logarítmica.
+bins = np.geomspace(line_values.min(), line_values.max(), 45)
 fig, ax = plt.subplots(figsize=(10, 4.5))
 ax.hist(line_values, bins=bins, color="#72B7B2", edgecolor="white")
 ax.set_xscale("log")
@@ -654,20 +480,20 @@ ax.legend(frameon=False)
 ax.grid(axis="y", alpha=.2)
 fig.tight_layout()
 plt.show()
-print(f"A média (GBP {line_values.mean():.2f}) e a mediana (GBP {line_values.median():.2f}) resumem a assimetria sem excluir observações altas.")
 """)
 
 md("""
-## RA3.4 Visualização 3 — países com maior valor registrado
+## RA3.4 Países com maior valor registrado
 
-O gráfico compara os dez países com maior soma do valor bruto dos itens positivos.
-Ele descreve a composição desta base; diferenças refletem o volume de registros e
-não permitem comparar tamanho de mercado ou desempenho atual.
+O Reino Unido concentra 8,75 milhões de GBP, seguido pelos Países Baixos e pela Irlanda. O gráfico se refere aos registros desta loja, que ficava no Reino Unido.
 """)
 code("""
-country_values = (add_item_value(loaded).groupby("Country", as_index=False)
-                  .agg(Linhas=("InvoiceNo", "size"), ValorGBP=("ItemValueGBP", "sum"))
-                  .sort_values("ValorGBP", ascending=False))
+# Compara os dez países com maior valor registrado no recorte.
+country_values = (
+    valued_items.groupby("Country", as_index=False)
+    .agg(Linhas=("InvoiceNo", "size"), ValorGBP=("ItemValueGBP", "sum"))
+    .sort_values("ValorGBP", ascending=False)
+)
 top_countries = country_values.head(10).sort_values("ValorGBP")
 display(country_values.head(10).round({"ValorGBP": 2}))
 fig, ax = plt.subplots(figsize=(10, 5.5))
@@ -678,50 +504,33 @@ ax.set(title="10 países com maior valor de itens positivos no recorte",
 ax.grid(axis="x", alpha=.2)
 fig.tight_layout()
 plt.show()
-print("Interpretação: o ranking descreve os registros desta loja entre 2010 e 2011; não representa participação no comércio eletrônico em geral.")
 """)
 
 md("""
-## RA3.5 Representatividade dos dados
+## RA3.5 Representatividade
 
-A base contém o histórico disponível de uma única loja online sediada no Reino
-Unido, entre dezembro de 2010 e dezembro de 2011. Não é uma amostra aleatória de
-todas as lojas, consumidores ou períodos. As observações descrevem essa fonte,
-o catálogo e as regras do recorte; não devem ser generalizadas para o comércio
-eletrônico atual.
-
-O recorte preserva valores positivos extremos e linhas repetidas porque não há
-evidência suficiente para removê-los. Cancelamentos, quantidades não positivas,
-preços não positivos e lançamentos que não são mercadorias foram separados.
-A análise diária não depende de `CustomerID`, que está ausente em parte das linhas.
+As conclusões se limitam ao período de dezembro de 2010 a dezembro de 2011 e ao histórico disponível dessa loja. Mantivemos as linhas idênticas porque a base não tem uma chave por item de transação para verificar se são repetições indevidas. A análise diária usa data, quantidade e preço, então inclui as linhas sem `CustomerID`.
 """)
 code("""
-missing_customer_share = loaded.CustomerID.isna().mean() * 100
-duplicate_count = int(loaded[[c for c in loaded.columns if c != "SourceRow"]].duplicated().sum())
+# Calcula o percentual de linhas sem ID de cliente e conta as linhas repetidas.
+missing_customer_share = loaded["CustomerID"].isna().mean() * 100
+duplicate_count = loaded.drop(columns="SourceRow").duplicated().sum()
+# Mostra o período e o número de países para indicar a cobertura da base.
 print(f"Período: {loaded.InvoiceDate.min().date()} a {loaded.InvoiceDate.max().date()}")
-print(f"Países presentes: {loaded.Country.nunique()} | CustomerID ausente: {missing_customer_share:.2f}%")
+print(f"Países: {loaded.Country.nunique()}")
+print(f"Linhas sem CustomerID: {missing_customer_share:.2f}%")
 print(f"Linhas idênticas extras preservadas: {duplicate_count:,}".replace(",", "."))
 """)
 
 md("""
-## RA3.6 Aplicação supervisionada — previsão diária por regressão
+## RA3.6 Previsão diária
 
-**Problema preditivo:** estimar o valor bruto dos itens positivos de um dia usando
-o histórico observado até o dia anterior. O alvo numérico contínuo caracteriza
-uma tarefa de regressão.
+O Random Forest estima o total do dia usando os valores de um e sete dias antes, a média dos sete dias anteriores e o dia da semana (codificado por seno e cosseno). Os primeiros sete dias servem para montar o histórico. Dividimos os dias restantes em 293 para treino e 74 para teste, em ordem cronológica.
 
-As entradas são os valores do dia anterior e de sete dias antes, a média dos sete
-dias anteriores e a posição do dia da semana. Os sete primeiros dias sem histórico
-suficiente não entram no ajuste. Os primeiros 80% dos dias formam o treino e os
-20% finais ficam reservados para teste, mantendo a ordem cronológica.
-
-O Random Forest é comparado com um baseline sazonal: o valor observado no mesmo
-dia da semana anterior. A avaliação usa MAE e RMSE, ambas em GBP; RMSE penaliza
-mais os erros grandes. É uma avaliação de um passo à frente: para cada dia de teste,
-os valores realmente observados até o dia anterior estão disponíveis. A importância
-das entradas descreve o modelo e não prova causa.
+Para cada dia de teste, o modelo recebe os totais observados até o dia anterior. A referência semanal usa o total de sete dias antes. O MAE é o erro absoluto médio, e o RMSE dá mais peso aos erros grandes. Os dois são expressos em GBP.
 """)
 code("""
+# Mostra os erros, a importância das entradas e as datas de treino e teste.
 ra3_model = fit_daily_value_model(loaded)
 ra3_metrics = ra3_model["metrics"]
 ra3_comparison = ra3_model["comparison"]
@@ -729,13 +538,7 @@ display(ra3_metrics)
 display(ra3_model["importance"].round(3))
 print(f"Treino: {ra3_model['train_days']} dias, até {ra3_model['train_end'].date()}")
 print(f"Teste: {ra3_model['test_days']} dias, de {ra3_model['test_start'].date()} a {ra3_model['test_end'].date()}")
-model_mae = float(ra3_metrics.loc[ra3_metrics["Abordagem"] == "Regressão Random Forest", "MAE (GBP)"].iloc[0])
-baseline_mae = float(ra3_metrics.loc[ra3_metrics["Abordagem"].str.startswith("Baseline"), "MAE (GBP)"].iloc[0])
-if model_mae < baseline_mae:
-    improvement = (baseline_mae - model_mae) / baseline_mae * 100
-    print(f"No teste, o MAE do modelo foi {improvement:.1f}% menor que o baseline (GBP {model_mae:.2f} contra GBP {baseline_mae:.2f}).")
-else:
-    print(f"No teste, o modelo não superou o baseline: MAE de GBP {model_mae:.2f} contra GBP {baseline_mae:.2f}.")
+# Compara os valores observados com as duas previsões no período de teste.
 fig, ax = plt.subplots(figsize=(12, 4.5))
 ax.plot(ra3_comparison.index, ra3_comparison["Real (GBP)"], color="#222222",
         linewidth=1.8, label="Observado")
@@ -752,33 +555,26 @@ plt.show()
 """)
 
 md("""
-## RA3.7 Conclusões, limites e reprodução
+## RA3.7 Resultados da previsão
 
-As tabelas e os gráficos descrevem o valor dos itens positivos registrados nesta
-loja. A comparação entre o Random Forest e o baseline mostra se as variáveis
-temporais ajudam no período final reservado. O erro em GBP deve ser interpretado
-na escala do alvo e junto com sua distribuição. Se o modelo não superar o baseline,
-sua utilidade preditiva é limitada para este recorte.
+O Random Forest reduziu o MAE em 6,7% e o RMSE em 4,1% em relação à referência semanal. O MAE de 13.607,02 GBP equivale a cerca de 54% da mediana diária de todo o período. O pico perto do fim do gráfico foi um dos maiores erros da previsão.
 
-O histórico é curto e pertence a uma única loja; o resultado não valida previsões
-para outros anos ou negócios. O alvo não reconcilia cancelamentos e não deve ser
-chamado de receita líquida ou lucro. Não usamos dados de cliente como entrada, não
-fizemos seleção aleatória de linhas e não removemos outliers positivos.
-
-Execute o notebook do início ao fim para reproduzir as análises. Resultados
-numéricos do modelo ficam em `evidence/ra3_results.json`.
+As métricas ficam em `evidence/ra3_results.json`.
 
 ### Referências do RA3
 
-- Chen (2015). *Online Retail*, UCI Machine Learning Repository, DOI 10.24432/C5BW33, CC BY 4.0.
-- scikit-learn. [RandomForestRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html), [MAE](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_absolute_error.html) e [RMSE](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.root_mean_squared_error.html).
-- Enunciado RA3, disciplina Data Analytics, PUCPR, 2026.
+- Chen, D. (2015). *Online Retail*. UCI Machine Learning Repository. DOI 10.24432/C5BW33.
+- Documentação do scikit-learn. [RandomForestRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html), [MAE](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_absolute_error.html) e [RMSE](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.root_mean_squared_error.html).
 """)
 code("""
+from matplotlib import __version__ as matplotlib_version
+from sklearn import __version__ as sklearn_version
+
+# Reúne e salva as métricas, o período de teste e os limites da análise.
 ra3_record = {
     "rows_analyzed": int(len(loaded)),
     "daily_observations": int(len(ra3_model["daily"])),
-    "daily_target": "sum of positive item Quantity * UnitPrice, GBP",
+    "daily_target": "Soma diária de Quantity × UnitPrice (GBP)",
     "train_days": int(ra3_model["train_days"]),
     "test_days": int(ra3_model["test_days"]),
     "train_end": ra3_model["train_end"].date().isoformat(),
@@ -787,13 +583,15 @@ ra3_record = {
     "metrics": ra3_metrics.to_dict(orient="records"),
     "missing_customer_share_percent": round(float(missing_customer_share), 4),
     "countries": int(loaded.Country.nunique()),
-    "libraries": {"matplotlib": __import__("matplotlib").__version__,
-                  "scikit_learn": __import__("sklearn").__version__},
-    "limitations": ["one store", "2010-12 through 2011-12", "positive item gross value, not net sales or profit",
-                    "one-step-ahead temporal evaluation", "not generalizable to current retail"],
+    "libraries": {"matplotlib": matplotlib_version, "scikit_learn": sklearn_version},
+    "limitations": [
+        "Uma loja, de dezembro de 2010 a dezembro de 2011",
+        "Valor bruto dos itens positivos, com cancelamentos separados",
+        "Avaliação de um dia à frente",
+    ],
 }
 (ROOT / "evidence/ra3_results.json").write_text(
-    json.dumps(ra3_record, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    json.dumps(ra3_record, ensure_ascii=False, indent=2), encoding="utf-8")
 print("Resultados do RA3 registrados em evidence/ra3_results.json.")
 """)
 
@@ -818,132 +616,6 @@ execution_record = {
     json.dumps(execution_record, ensure_ascii=False, indent=2), encoding="utf-8")
 print("Registro de execução atualizado em evidence/execution_record.json.")
 """)
-
-compact_markdown = [
-    """
-# RA1, RA2 e RA3 — Online Retail
-
-**Gastão Eduardo e Gustavo Schott · Sistemas de Informação, 6º período · Professora Marina de Lara**
-
-No **RA1**, preparamos o histórico da loja. No **RA2**, mostramos seis eventos fictícios chegando em três momentos. No **RA3**, analisamos o histórico e estimamos valores diários.
-
-### No Google Colab
-1. Envie este arquivo `.ipynb`.
-2. Selecione **Ambiente de execução > Executar tudo**.
-3. Aguarde todas as células terminarem. A primeira execução instala as dependências e baixa a base.
-""",
-    """
-## Ambiente
-
-Pandas organiza os dados; Apache Spark processa os arquivos que chegam no RA2; Matplotlib e scikit-learn apoiam as análises do RA3. As versões usadas aparecem nas células.
-""",
-    """
-# RA1 — Ingestão e preparação
-
-## Problema e objetivo
-
-Uma loja precisa de registros organizados para analisar suas transações. O objetivo aqui é conferir a base Online Retail e preparar registros positivos de mercadorias, de todos os países e durante o período disponível.
-
-**Perguntas para análises futuras:**
-1. Como o valor dos registros positivos varia por dia?
-2. Quais produtos têm maior quantidade registrada?
-3. No RA2, como os valores por minuto mudam quando chegam novos eventos?
-
-No RA1, preparamos os dados; não respondemos às duas primeiras perguntas nem calculamos lucro ou vendas líquidas. Uma linha é um item da transação, não necessariamente um pedido inteiro.
-""",
-    """
-## RA1.2 Fonte e ingestão
-
-**Fonte:** Chen (2015), *Online Retail*, UCI Machine Learning Repository. [Página da base](https://archive.ics.uci.edu/dataset/352/online+retail) · DOI 10.24432/C5BW33 · Licença CC BY 4.0.
-
-A base contém transações de uma loja do Reino Unido, de 2010 a 2011, com preços em GBP. O arquivo é um Excel com oito colunas. O código baixa o ZIP oficial, confere seu hash e lê a planilha `Online Retail`.
-""",
-    """
-## RA1.3 Qualidade dos dados
-
-As oito colunas são: `InvoiceNo` (transação), `StockCode` e `Description` (item), `Quantity`, `InvoiceDate`, `UnitPrice`, `CustomerID` e `Country`.
-
-Uma fatura pode aparecer em várias linhas. As contagens de qualidade podem se sobrepor; não devem ser somadas para calcular exclusões. O balanço sem sobreposição aparece na próxima etapa.
-""",
-    """
-Clientes sem ID foram mantidos: ainda é possível usar o item e o horário. Linhas idênticas foram sinalizadas e mantidas porque a fonte não fornece uma chave única de linha. Quantidades e preços positivos extremos também foram mantidos; a loja atende atacadistas. Cancelamentos e valores não positivos precisam ser interpretados, não tratados automaticamente como erro.
-""",
-    """
-## RA1.4 Preparação
-
-- Textos padronizados; datas e números convertidos; identificadores tratados como texto.
-- Campos essenciais inválidos, cancelamentos, quantidades ou preços não positivos e códigos de frete, taxas, ajustes ou vouchers ficam separados.
-- Clientes ausentes, repetições, extremos positivos e códigos raros de produtos são preservados.
-- Cada linha mantém sua origem no Excel (`SourceRow`) e, se separada, recebe o primeiro motivo aplicável.
-
-A função abaixo contém as regras usadas na preparação.
-""",
-    """
-## RA1.5 Resultado e validação
-
-O arquivo preparado contém **527.761 linhas**; **14.148** ficaram separadas com justificativa. O balanço é `541.909 = 527.761 + 14.148`.
-
-`sales_prepared.csv` contém os registros do recorte. `excluded_records.csv` mantém as linhas separadas e seus motivos. As verificações confirmam campos essenciais, quantidades e preços positivos, origem única e balanço completo.
-""",
-    """
-### Limites e reprodução
-
-A base cobre uma loja e um período histórico específico. Não representa todo o comércio online. O recorte não é receita líquida nem lucro: não ligamos cada cancelamento à venda correspondente.
-
-O notebook contém o processo de ingestão e preparação. A documentação de entrega acompanha o template da disciplina. Fonte: Chen (2015), *Online Retail*, UCI Machine Learning Repository, DOI 10.24432/C5BW33, CC BY 4.0.
-""",
-    """
-# RA2 — Spark Structured Streaming
-
-## Objetivo
-
-Pergunta: como a soma do valor dos itens por minuto muda conforme chegam novos eventos? Usamos o cenário do enunciado com uma fonte estática e chegadas simuladas.
-
-A única análise é `Quantity × UnitPrice` por janela de um minuto. Os eventos são fictícios; os códigos e nomes de dois produtos vêm do conjunto preparado no RA1.
-""",
-    """
-## RA2.2 Eventos simulados
-
-São seis eventos fictícios em três arquivos, dois por chegada. Horários, quantidades e preços foram criados para a demonstração. A hora no evento (`event_time`) determina a janela; a hora em que o arquivo chega ao Spark pode ser diferente.
-
-Resultados esperados: chegada 1 → **25 GBP**; chegada 2 → **55 e 20 GBP**; chegada 3 → **55, 30 e 10 GBP**. Soma final: **95 GBP**.
-""",
-    """
-## RA2.3 Janela e consulta
-
-A janela **tumbling** dura um minuto e não se sobrepõe à seguinte. O início entra e o fim não: `[10:00, 10:01)`. Por isso, o evento das 10:01:00 pertence à janela que começa às 10:01.
-
-`readStream` acompanha novos arquivos, `window` agrupa pelo horário do evento e `sum` soma os valores. `writeStream` atualiza a tabela da demonstração em memória. Ela não é armazenamento permanente de produção.
-
-Referência: [guia oficial do Spark Structured Streaming 3.5.7](https://spark.apache.org/docs/3.5.7/structured-streaming-programming-guide.html).
-""",
-    "## Chegada 1: `20 + 5 = 25 GBP` na janela 10:00.",
-    "## Chegada 2: a janela 10:00 passa a 55 GBP; às 10:01 começa outra com 20 GBP.",
-    "## Chegada 3: a janela 10:01 passa a 30 GBP e a janela 10:02 começa com 10 GBP.",
-    """
-## RA2.5 Resultado e limites
-
-As três chegadas processaram dois eventos cada. Os totais observados conferem com a conta manual. São resultados da simulação, não conclusões sobre as vendas históricas.
-
-A demonstração usa uma janela e uma agregação. Não implementa Kafka, armazenamento durável, watermark ou tratamento de falhas de produção.
-""",
-    """
-# RA3 — Análise, visualização e aprendizado de máquina
-
-O RA3 descreve o valor bruto dos itens positivos registrados e estima o valor diário com base no histórico até o dia anterior. A medida não representa receita líquida ou lucro.
-""",
-    "## RA3.2 Visualização 1 — evolução diária\n\nO gráfico mostra totais diários e a média móvel de sete dias. Dias sem registros ficam como zero; picos permanecem nos dados.",
-    "## RA3.3 Visualização 2 — distribuição por linha\n\nA escala logarítmica permite ver a cauda de valores altos. Mediana e P90 estão marcados; nenhum valor foi removido.",
-    "## RA3.4 Visualização 3 — países\n\nO gráfico mostra os dez países com maior soma dos valores positivos neste recorte histórico, não participação de mercado.",
-    "## RA3.5 Representatividade\n\nA base cobre uma loja do Reino Unido entre dezembro de 2010 e dezembro de 2011. Não é amostra aleatória do comércio atual.",
-    "## RA3.6 Regressão supervisionada\n\nO Random Forest estima o valor diário usando lags e dia da semana. A divisão é cronológica (80%/20%) e a comparação usa um baseline sazonal, MAE e RMSE.",
-    "## RA3.7 Conclusões e reprodução\n\nOs resultados e limitações são interpretados junto da distribuição do alvo. Execute o notebook do início ao fim para reproduzir; métricas ficam em `evidence/ra3_results.json`.",
-]
-markdown_cells = [cell for cell in cells if cell["cell_type"] == "markdown"]
-if len(markdown_cells) != len(compact_markdown):
-    raise RuntimeError("A lista de explicações deve corresponder às células Markdown do notebook.")
-for cell, source in zip(markdown_cells, compact_markdown):
-    cell["source"] = textwrap.dedent(source).strip()
 
 for i, cell in enumerate(cells):
     cell["id"] = f"cell-{i:03d}"

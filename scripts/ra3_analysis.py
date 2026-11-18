@@ -6,8 +6,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 
 def add_item_value(data):
-    """Copia os registros e calcula o valor bruto dos itens positivos em GBP."""
     result = data.copy()
+    # Calcula o valor de cada item multiplicando a quantidade pelo preço unitário.
     result["ItemValueGBP"] = (
         pd.to_numeric(result["Quantity"], errors="raise").astype(float)
         * pd.to_numeric(result["UnitPrice"], errors="raise").astype(float)
@@ -16,9 +16,9 @@ def add_item_value(data):
 
 
 def descriptive_statistics(prepared):
-    """Resume medidas numéricas sem remover observações extremas."""
     valued = add_item_value(prepared)
     rows = []
+    # Calcula média, mediana, desvio padrão e percentis para cada medida.
     for column, label in [
         ("Quantity", "Quantidade por linha (unidades)"),
         ("UnitPrice", "Preço unitário (GBP)"),
@@ -39,13 +39,15 @@ def descriptive_statistics(prepared):
 
 
 def build_daily_dataset(prepared):
-    """Agrega valor e linhas por dia e inclui dias sem registros como zero."""
+    """Inclui os dias sem registros para que as defasagens sigam o calendário."""
     valued = add_item_value(prepared)
+    # Soma o valor e conta as linhas de cada dia.
     valued["Date"] = pd.to_datetime(valued["InvoiceDate"]).dt.normalize()
     daily = valued.groupby("Date").agg(
         DailyValueGBP=("ItemValueGBP", "sum"),
         ItemLines=("InvoiceNo", "size"),
     )
+    # Preenche com zero os dias sem registros para manter o calendário contínuo.
     calendar = pd.date_range(daily.index.min(), daily.index.max(), freq="D", name="Date")
     daily = daily.reindex(calendar, fill_value=0)
     daily["ItemLines"] = daily["ItemLines"].astype(int)
@@ -54,12 +56,14 @@ def build_daily_dataset(prepared):
 
 
 def fit_daily_value_model(prepared, test_fraction=0.20):
-    """Forecasta valor diário em GBP com divisão temporal e baseline semanal."""
+    """Estima o valor diário com o histórico até o dia anterior."""
     if not 0 < test_fraction < 0.5:
         raise ValueError("test_fraction deve estar entre 0 e 0,5.")
 
+    # Usa o valor total de cada dia como alvo da previsão.
     daily = build_daily_dataset(prepared)
     target = daily["DailyValueGBP"]
+    # Cria as entradas do modelo com valores anteriores e o dia da semana.
     features = pd.DataFrame(index=daily.index)
     features["lag_1"] = target.shift(1)
     features["lag_7"] = target.shift(7)
@@ -69,21 +73,27 @@ def fit_daily_value_model(prepared, test_fraction=0.20):
     features["weekday_cos"] = np.cos(2 * np.pi * weekday / 7)
     model_data = features.assign(target=target).dropna()
 
+    # Separa os dias mais antigos para treino e os mais recentes para teste.
     split_index = int(len(model_data) * (1 - test_fraction))
     if split_index < 30 or len(model_data) - split_index < 14:
         raise ValueError("Histórico insuficiente para a divisão temporal definida.")
 
-    x_train = model_data.iloc[:split_index].drop(columns="target")
-    y_train = model_data.iloc[:split_index]["target"]
-    x_test = model_data.iloc[split_index:].drop(columns="target")
-    y_test = model_data.iloc[split_index:]["target"]
+    train = model_data.iloc[:split_index]
+    test = model_data.iloc[split_index:]
+    x_train = train.drop(columns="target")
+    y_train = train["target"]
+    x_test = test.drop(columns="target")
+    y_test = test["target"]
+    # Configura e treina o Random Forest com os dados anteriores ao teste.
     model = RandomForestRegressor(
         n_estimators=300, min_samples_leaf=5, random_state=42, n_jobs=-1
     )
     model.fit(x_train, y_train)
+    # Prevê os dias de teste e usa o valor de sete dias antes como referência.
     predictions = pd.Series(model.predict(x_test), index=x_test.index, name="Modelo")
-    baseline = model_data.iloc[split_index:]["lag_7"].rename("Baseline semanal")
+    baseline = test["lag_7"].rename("Baseline semanal")
 
+    # Calcula MAE e RMSE para comparar o modelo com a referência semanal.
     metrics = pd.DataFrame([
         {
             "Abordagem": "Regressão Random Forest",
@@ -104,11 +114,6 @@ def fit_daily_value_model(prepared, test_fraction=0.20):
     importance = pd.Series(
         model.feature_importances_, index=x_train.columns, name="Importância"
     ).sort_values(ascending=False).to_frame()
-
-    if not x_train.index.max() < x_test.index.min():
-        raise AssertionError("A divisão precisa manter o teste depois do treino.")
-    if features.loc[x_test.index, ["lag_1", "lag_7", "rolling_mean_7"]].isna().any().any():
-        raise AssertionError("A previsão não pode usar histórico incompleto.")
 
     return {
         "daily": daily,

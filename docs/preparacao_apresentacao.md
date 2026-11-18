@@ -79,25 +79,23 @@ Se as chegadas já aparecem na tela, mostre cada resultado uma vez. Não clique 
 
 ## RA3 — análise e regressão
 
-Procure **“RA3.1 Objetivo”**, os gráficos **“RA3.2” a “RA3.4”**, **“RA3.5 Representatividade”** e **“RA3.6 Aplicação supervisionada”**.
+Comece em **“RA3.1 Valor por linha”**, passe pelos três gráficos e termine em **“RA3.6 Previsão diária”**.
 
 ### Como explicar
 
-> No RA3, usamos os registros históricos preparados no RA1. A análise descritiva mostra os valores por linha e por dia. Para o modelo, cada observação é um dia, e a previsão usa o histórico recente para estimar o valor bruto dos itens positivos do dia seguinte.
+> No RA3, a gente voltou à base do RA1. Multiplicamos quantidade por preço em cada linha e somamos os valores por dia. Essa soma é o que o modelo tenta prever para o dia seguinte.
 
-Mostre, nesta ordem: a evolução diária com média móvel; a distribuição por linha em escala logarítmica; e os dez países com maior valor registrado. Para cada figura, diga o que está no eixo e destaque que são registros positivos desta loja, não vendas líquidas do mercado.
+Na série diária, mostre como a média móvel de sete dias suaviza os picos. No histograma, aponte a mediana de **9,90 GBP** e explique que a escala logarítmica permite mostrar também as linhas de valor muito alto. No gráfico dos países, destaque a concentração no Reino Unido, onde ficava a loja.
 
-Na parte do modelo, explique que o Random Forest recebe os valores de um e sete dias antes, a média dos sete dias anteriores e o dia da semana. Os 80% iniciais do calendário são usados no treino e os 20% finais no teste. O baseline repete o valor do mesmo dia da semana anterior. Compare MAE e RMSE no notebook: ambos estão em GBP, e RMSE penaliza mais os erros grandes.
+Explique que o Random Forest recebe os valores de um e sete dias antes, a média dos sete dias anteriores e o dia da semana. Depois de montar esse histórico, usamos 293 dias para treino e os 74 seguintes para teste. A referência semanal repete o valor de sete dias antes.
 
-Use os números que aparecem na tabela executada do RA3. Se o modelo não superar o baseline, diga isso diretamente: o resultado indica que, com esses dados e essa divisão, a regressão não acrescentou precisão em relação à regra simples.
+Mostre a tabela e o gráfico do teste. O erro absoluto médio caiu de **14.587,53 GBP** para **13.607,02 GBP**, uma redução de **6,7%**. Aponte o pico perto do fim do gráfico para mostrar onde o modelo ainda errou bastante.
 
 ### Se perguntarem sobre o RA3
 
 - **O que exatamente está sendo previsto?** A soma de quantidade vezes preço das linhas positivas de cada dia.
 - **Isso é faturamento ou lucro?** Não. Os cancelamentos não foram conciliados com as compras originais.
 - **Por que separar por data?** Para testar em dias posteriores aos usados no treino e evitar misturar passado e futuro.
-- **Como interpretar MAE e RMSE?** São erros médios em GBP; quanto menores, melhor. RMSE reage mais a erros muito grandes.
+- **Como interpretar MAE e RMSE?** O MAE é a média dos erros em valor absoluto. O RMSE dá mais peso aos erros grandes. Os dois ficam em GBP.
 - **Dá para generalizar para o varejo atual?** Não. A base é de uma loja e de 2010 a 2011.
 - **Os países são comparáveis como mercados?** Não. O gráfico descreve somente o volume registrado nesta base.
-
-**Fechamento:** a análise descreve o recorte histórico; as limitações da fonte também limitam as conclusões e as previsões.

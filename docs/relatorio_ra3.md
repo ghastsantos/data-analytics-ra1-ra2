@@ -5,9 +5,9 @@
 
 ## Objetivo e recorte
 
-O RA3 analisa os registros positivos de mercadorias preparados no RA1. Cada linha da base continua representando um item de uma transação. Para resumir o histórico por dia, calculamos `Quantity × UnitPrice` por linha e somamos esses valores por data.
+Usamos as 527.761 linhas preparadas no RA1. Elas cobrem uma loja online do Reino Unido entre 1º de dezembro de 2010 e 9 de dezembro de 2011. Cada linha representa um item de uma transação.
 
-Chamamos a medida de **valor bruto dos itens positivos registrados**. Cancelamentos não foram ligados às compras originais, portanto o valor não representa vendas líquidas ou lucro. O conjunto analisado tem 527.761 linhas e cobre uma loja online sediada no Reino Unido, de 1º de dezembro de 2010 a 9 de dezembro de 2011.
+Multiplicamos `Quantity × UnitPrice` e somamos os valores por data. Como os cancelamentos foram separados sem conciliação com as compras originais, essa soma mede o valor bruto dos itens positivos registrados em cada dia.
 
 ## Análise estatística descritiva
 
@@ -17,47 +17,41 @@ Chamamos a medida de **valor bruto dos itens positivos registrados**. Cancelamen
 | Preço unitário (GBP) | 3,27 | 2,08 | 4,38 | 7,62 | 16,63 | 649,50 |
 | Valor por linha (GBP) | 19,46 | 9,90 | 268,60 | 31,60 | 179,00 | 168.469,60 |
 
-A média do valor por linha é quase o dobro da mediana, e o desvio padrão é alto. Isso mostra que a distribuição é assimétrica e inclui valores extremos positivos. Eles foram mantidos, seguindo o critério do RA1, pois a base inclui operações de atacado e não há evidência suficiente para removê-los como erros.
+A média de 19,46 GBP é quase o dobro da mediana, de 9,90 GBP. As linhas de valor alto puxam a média para cima. Mantivemos os extremos positivos porque a loja vendia no atacado e a base não permite tratá-los como erros.
 
-No calendário diário completo há 374 dias. A média do valor bruto diário é GBP 27.463,72, a mediana é GBP 25.206,52 e o desvio padrão é GBP 22.556,45. Em 69 dias não há itens positivos registrados; esses dias foram representados com valor zero para preservar a sequência temporal.
+O calendário tem 374 dias. A média diária foi de 27.463,72 GBP, com mediana de 25.206,52 GBP e desvio padrão de 22.556,45 GBP. Preenchemos com zero os 69 dias sem itens positivos registrados para manter a sequência diária.
 
 ## Visualizações e interpretação
 
-1. **Evolução diária:** a série tem variação diária acentuada e picos isolados. A média móvel de sete dias ajuda a observar oscilações de curto prazo. Ela não elimina nem substitui os valores diários.
-2. **Distribuição por linha:** o histograma em escala logarítmica mostra a concentração de valores em faixas menores e uma cauda que alcança valores muito altos. A mediana é GBP 9,90; o percentil 90 é GBP 31,60.
-3. **Países com maior valor registrado:** o Reino Unido concentra GBP 8.747.561,66, seguido pelos Países Baixos (GBP 283.889,34) e pela Irlanda (EIRE, GBP 271.164,30). O gráfico descreve o volume presente nesta base, não participação de mercado.
-4. **Previsões no teste:** o gráfico compara valores observados, previsões do Random Forest e o baseline semanal nos 74 dias finais. O modelo acompanha parte do padrão semanal, mas não prevê bem picos isolados, como o observado no fim do período.
+1. Na série diária, a média móvel de sete dias suaviza as oscilações. A linha dos totais diários preserva os picos.
+2. O histograma usa escala logarítmica para incluir os valores mais altos. Em 90% das linhas, o valor ficou em até 31,60 GBP.
+3. O Reino Unido concentra 8.747.561,66 GBP, seguido pelos Países Baixos (283.889,34 GBP) e pela Irlanda (EIRE, 271.164,30 GBP). O gráfico mostra onde se concentram os registros da loja.
+4. No período de teste, o Random Forest acompanha parte da variação semanal, mas erra picos isolados, como o que aparece perto do fim da série.
 
 ## Representatividade e limitações
 
-Os dados correspondem ao histórico disponível de uma única loja, entre 2010 e 2011. Não são uma amostra aleatória de lojas ou clientes e não representam o comércio eletrônico atual. Há 38 países no campo `Country`, mas o volume é fortemente concentrado no Reino Unido. O identificador de cliente está ausente em 24,90% das linhas; por isso, a análise diária não depende dessa variável.
+As conclusões se limitam a essa loja e ao período observado. Há 38 países no campo `Country`, com forte concentração no Reino Unido. O identificador de cliente está ausente em 24,90% das linhas, e a análise diária usa data, quantidade e preço.
 
-O recorte preserva 5.221 linhas idênticas extras e extremos positivos. Cancelamentos e outros registros não positivos ou que não representam mercadorias foram separados no RA1. Essas decisões podem afetar somas e comparações, e não permitem afirmar que cada linha repetida corresponde a uma venda distinta.
+Mantivemos 5.221 linhas idênticas extras no recorte. Sem um identificador único por item de transação, não dá para saber quantas dessas linhas são repetições indevidas.
 
 ## Aplicação supervisionada
 
-**Problema:** prever o valor bruto dos itens positivos registrados em um dia, usando o histórico disponível até o dia anterior. O alvo é um valor numérico, portanto foi usada regressão.
+O Random Forest estima o total do dia com os valores de um e sete dias antes, a média dos sete dias anteriores e o dia da semana (codificado por seno e cosseno). Usamos 300 árvores, `min_samples_leaf=5` e `random_state=42`.
 
-**Entradas do modelo:** valor do dia anterior, valor de sete dias antes, média dos sete dias anteriores e posição do dia da semana, codificada por seno e cosseno. Cada data é prevista usando apenas valores anteriores. Dias sem registros são mantidos como zero.
+Os sete primeiros dias fornecem o histórico para montar as entradas. Treinamos com os 293 dias seguintes, até 26 de setembro de 2011, e testamos nos 74 dias de 27 de setembro a 9 de dezembro. Para cada previsão, usamos os valores observados até o dia anterior.
 
-**Treino e teste:** após a remoção dos primeiros dias sem histórico suficiente para os atributos de defasagem, 293 dias foram usados para treino até 26 de setembro de 2011. Os 74 dias seguintes, de 27 de setembro a 9 de dezembro de 2011, foram reservados para teste. A divisão preserva a ordem cronológica. A avaliação é de um passo à frente: valores observados até o dia anterior estão disponíveis para a previsão do próximo dia.
-
-**Modelo:** Random Forest com 300 árvores, `min_samples_leaf=5` e semente aleatória 42. Ele foi comparado a um baseline sazonal que prevê o valor do mesmo dia da semana anterior.
+Como referência, usamos o total do mesmo dia da semana anterior. O MAE mede o erro absoluto médio. O RMSE dá mais peso aos erros grandes. Ambos são expressos em GBP.
 
 | Abordagem | MAE (GBP) | RMSE (GBP) |
 |---|---:|---:|
 | Random Forest | 13.607,02 | 23.879,93 |
-| Baseline semanal | 14.587,53 | 24.896,61 |
+| Referência semanal | 14.587,53 | 24.896,61 |
 
-O Random Forest reduziu o MAE em 6,7% e o RMSE em 4,1% em relação ao baseline neste período de teste. A melhora é modesta: o MAE ainda equivale a cerca de 54% da mediana do valor diário do conjunto. O RMSE acima do MAE reflete a influência de erros maiores. O resultado sugere que as variáveis temporais ajudam um pouco neste recorte, mas não sustentam uma previsão precisa de picos nem generalização para outros períodos ou lojas.
-
-## Conclusão
-
-As análises mostram uma série diária irregular, uma distribuição de valores por linha com cauda longa e forte concentração geográfica no Reino Unido. A regressão temporal superou o baseline semanal por uma margem pequena. Essas conclusões se aplicam aos registros positivos da loja no período coberto; não estimam vendas líquidas, lucro ou comportamento atual do varejo.
+No teste, o Random Forest reduziu o MAE em 6,7% e o RMSE em 4,1%. Mesmo com a melhora, o erro absoluto médio ainda equivale a 54% da mediana diária do período completo.
 
 ## Reprodução
 
-Instale as dependências de `requirements.txt`, tenha Java 17 disponível e execute `projeto_data_analytics.ipynb` de cima para baixo. No Google Colab, envie o notebook e selecione **Ambiente de execução > Executar tudo**. Os resultados do modelo são registrados em `evidence/ra3_results.json`.
+No Google Colab, abra o notebook e selecione **Ambiente de execução > Executar tudo**. Para rodar localmente, siga o [README](../README.md#abrir-no-google-colab). [Métricas da execução](../evidence/ra3_results.json).
 
 ## Referências
 

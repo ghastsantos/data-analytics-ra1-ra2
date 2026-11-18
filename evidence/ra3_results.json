@@ -1,7 +1,7 @@
 {
   "rows_analyzed": 527761,
   "daily_observations": 374,
-  "daily_target": "sum of positive item Quantity * UnitPrice, GBP",
+  "daily_target": "Soma diária de Quantity × UnitPrice (GBP)",
   "train_days": 293,
   "test_days": 74,
   "train_end": "2011-09-26",
@@ -26,10 +26,8 @@
     "scikit_learn": "1.7.2"
   },
   "limitations": [
-    "one store",
-    "2010-12 through 2011-12",
-    "positive item gross value, not net sales or profit",
-    "one-step-ahead temporal evaluation",
-    "not generalizable to current retail"
+    "Uma loja, de dezembro de 2010 a dezembro de 2011",
+    "Valor bruto dos itens positivos, com cancelamentos separados",
+    "Avaliação de um dia à frente"
   ]
 }
